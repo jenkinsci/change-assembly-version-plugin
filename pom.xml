@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+	<groupId>org.jenkins-ci.plugins</groupId>
+	<artifactId>plugin</artifactId>
+	<version>1.532.3</version><!-- which version of Jenkins is this plugin built against? Users must have at least this Jenkins version to use this plugin. -->
+	</parent>
+	<properties>
+	<!-- Hudson properties: see http://wiki.hudson-ci.org/display/HUDSON/Building+a+software+project#Buildingasoftwareproject-HudsonSetEnvironmentVariables -->
+		<jenkins.buildId>${env.BUILD_ID}</jenkins.buildId>
+		<jenkins.buildNumber>${env.BUILD_NUMBER}</jenkins.buildNumber>
+		<jenkins.buildTag>${env.BUILD_TAG}</jenkins.buildTag>
+		<jenkins.cvsBranch>${env.CVS_BRANCH}</jenkins.cvsBranch>
+		<jenkins.executorNumber>${env.EXECUTOR_NUMBER}</jenkins.executorNumber>
+		<jenkins.hudsonUrl>${env.HUDSON_URL}</jenkins.hudsonUrl>
+		<jenkins.javaHome>${env.JAVA_HOME}</jenkins.javaHome>
+		<jenkins.jobName>${env.JOB_NAME}</jenkins.jobName>
+		<jenkins.svnRevision>${env.SVN_REVISION}</jenkins.svnRevision>
+		<jenkins.workspace>${env.WORKSPACE}</jenkins.workspace>
+	</properties>
+	
+	  <distributionManagement>
+		<repository>
+		  <id>maven.jenkins-ci.org</id>
+		  <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+		</repository>
+	  </distributionManagement>
+  
+	<scm>
+		<connection>scm:git:ssh://github.com/jenkinsci/change-assembly-version-plugin.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/change-assembly-version-plugin.git</developerConnection>
+		<url>https://github.com/jenkinsci/change-assembly-version-plugin</url>
+	</scm>
+	
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/change-assembly-version</url>
+	<developers>
+		<developer>
+		  <id>leonardokobus</id>
+		  <name>Leonardo Kobus</name>		  
+		</developer>
+	</developers>
+	<groupId>org.jenkinsci.plugins</groupId>
+	<artifactId>change-assembly-version-plugin</artifactId>
+	<version>1.0</version>
+	<packaging>hpi</packaging>
+
+	<licenses>
+	<license>
+	  <name>MIT License</name>
+	  <url>http://opensource.org/licenses/MIT</url>
+	</license>
+	</licenses>
+
+	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
+	<repositories>
+	<repository>
+	  <id>repo.jenkins-ci.org</id>
+	  <url>http://repo.jenkins-ci.org/public/</url>
+	</repository>
+	</repositories>
+
+	<pluginRepositories>
+	<pluginRepository>
+	  <id>repo.jenkins-ci.org</id>
+	  <url>http://repo.jenkins-ci.org/public/</url>
+	</pluginRepository>
+  </pluginRepositories>
+
+</project>
