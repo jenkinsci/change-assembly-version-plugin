@@ -1,12 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-	<groupId>org.jenkins-ci.plugins</groupId>
-	<artifactId>plugin</artifactId>
-	<version>1.532.3</version><!-- which version of Jenkins is this plugin built against? Users must have at least this Jenkins version to use this plugin. -->
+		<groupId>org.jenkins-ci.plugins</groupId>
+		<artifactId>plugin</artifactId>
+		<version>1.532.3</version>
 	</parent>
 	<properties>
-	<!-- Hudson properties: see http://wiki.hudson-ci.org/display/HUDSON/Building+a+software+project#Buildingasoftwareproject-HudsonSetEnvironmentVariables -->
 		<jenkins.buildId>${env.BUILD_ID}</jenkins.buildId>
 		<jenkins.buildNumber>${env.BUILD_NUMBER}</jenkins.buildNumber>
 		<jenkins.buildTag>${env.BUILD_TAG}</jenkins.buildTag>
@@ -32,16 +31,16 @@
 		<url>https://github.com/jenkinsci/change-assembly-version-plugin</url>
 	</scm>
 	
-	<url>http://wiki.jenkins-ci.org/display/JENKINS/change-assembly-version</url>
+	<url>https://wiki.jenkins-ci.org/display/JENKINS/Change+Assembly+Version</url>
 	<developers>
 		<developer>
-		  <id>leonardokobus</id>
+		  <id>lkobus</id>
 		  <name>Leonardo Kobus</name>		  
 		</developer>
 	</developers>
 	<groupId>org.jenkinsci.plugins</groupId>
 	<artifactId>change-assembly-version-plugin</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 
 	<licenses>
@@ -50,8 +49,7 @@
 	  <url>http://opensource.org/licenses/MIT</url>
 	</license>
 	</licenses>
-
-	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
+	
 	<repositories>
 	<repository>
 	  <id>repo.jenkins-ci.org</id>
