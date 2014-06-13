@@ -30,20 +30,26 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class ChangeAssemblyVersion extends Builder{
 	
 	private final String task;
+	private final String assemblyFile;
 	
 	@DataBoundConstructor
-	public ChangeAssemblyVersion(String task){
+	public ChangeAssemblyVersion(String task, String assemblyFile){
 		this.task = task;
+		this.assemblyFile = assemblyFile;
 	}
 	
 	public String getTask(){
 		return this.task;
 	}
 	
+	public String getAssemblyFile(){
+		return this.assemblyFile;
+	}
+	
 	/**
 	 * 
 	 * The perform method is gonna search all the file named "Assemblyinfo.cs" in any folder below,
-	 * and after found it is gonna change the version of AssemblyVersion and AssemblyFileVersion in the
+	 * and after found will change the version of AssemblyVersion and AssemblyFileVersion in the
 	 * file for the inserted version (task property value).
 	 * 
 	 * 
@@ -58,8 +64,8 @@ public class ChangeAssemblyVersion extends Builder{
         	envVars = build.getEnvironment(listener);	               
 	        String version = new AssemblyVersion(this.task, envVars).getVersion();
 	        listener.getLogger().println(String.format("Changing the AssemblyInfo.cs to version : %s", version));
-	        List<FilePath> fp = build.getWorkspace().child(envVars.get("WORKSPACE")).list();
-	        ChangeTools.ReplaceAllProperties(fp, version, listener);
+	        List<FilePath> fp = build.getWorkspace().child(envVars.get("WORKSPACE")).list();	        
+	        new ChangeTools(this.assemblyFile).ReplaceAllProperties(fp, version, listener);
     	}catch(Exception ex){    		
     		StringWriter sw = new StringWriter();
     		ex.printStackTrace(new PrintWriter(sw));    		

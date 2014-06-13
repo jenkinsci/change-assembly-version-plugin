@@ -14,7 +14,14 @@ import java.util.List;
 public class ChangeTools {
 	
 	
-	public ChangeTools(){
+	private final String fileName;
+	
+	public ChangeTools(String fileName){
+		if(!fileName.equals("")){
+			this.fileName = fileName;	
+		} else{
+			this.fileName = "AssemblyInfo.cs";
+		}
 		
 	}
 	
@@ -26,7 +33,7 @@ public class ChangeTools {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static void ReplaceAllProperties(List<FilePath> fpList, String version, BuildListener listener) throws IOException, InterruptedException{		
+	public void ReplaceAllProperties(List<FilePath> fpList, String version, BuildListener listener) throws IOException, InterruptedException{		
 		listener.getLogger().println("Listing files");				
 		List<FilePath> fileList = getFiles(fpList, listener);		
 		if(fileList.size() > 0){									
@@ -40,14 +47,14 @@ public class ChangeTools {
 		}									
 	}
 	
-	private static List<FilePath> getFiles(List<FilePath> files, BuildListener listener) throws IOException, InterruptedException{
+	private List<FilePath> getFiles(List<FilePath> files, BuildListener listener) throws IOException, InterruptedException{
 		List<FilePath> result = new ArrayList<FilePath>();		
 		for (FilePath file : files) {						
 			if(!file.getRemote().contains("svn")){					
 		        if (file.isDirectory()) {
 		        	result.addAll(getFiles(file.list(), listener));
 		        } else{				        						
-		        	if(file.getRemote().contains("AssemblyInfo.cs")){		        		
+		        	if(file.getRemote().contains(this.fileName)){		        		
 		        		result.add(file);		        		
 		        	}
 		        }
