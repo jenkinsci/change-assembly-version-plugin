@@ -79,8 +79,8 @@ public class ChangeAssemblyVersion extends Builder{
 	public static class Descriptor extends BuildStepDescriptor<Builder>{
 				
 		@Override
-		public boolean isApplicable(Class<? extends AbstractProject> jobType){
-			return FreeStyleProject.class.isAssignableFrom(jobType);
+		public boolean isApplicable(Class<? extends AbstractProject> jobType){			  
+			return true;
 		}
 		
 		@Override
