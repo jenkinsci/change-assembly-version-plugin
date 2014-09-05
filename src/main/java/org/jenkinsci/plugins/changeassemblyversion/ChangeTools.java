@@ -53,10 +53,14 @@ public class ChangeTools {
 			if(!file.getRemote().contains("svn")){					
 		        if (file.isDirectory()) {
 		        	result.addAll(getFiles(file.list(), listener));
-		        } else{				        						
-		        	if(file.getRemote().contains(this.fileName)){		        		
-		        		result.add(file);		        		
+		        } else{				        					
+		        	String[] filesName = this.fileName.split(",");
+		        	for(String fileName : filesName){
+		        		if(file.getRemote().contains(fileName.trim())){		        		
+			        		result.add(file);		        		
+			        	}
 		        	}
+		        
 		        }
 			}
 	    }		
