@@ -15,14 +15,27 @@ public class ChangeTools {
 	
 	
 	private final String fileName;
+	private final String regexPattern;
+	private final String replacementPattern;
 	
-	public ChangeTools(String fileName){
+	public ChangeTools(String fileName,String regexPattern,String replacementPattern){
 		if(!fileName.equals("")){
 			this.fileName = fileName;	
 		} else{
 			this.fileName = "AssemblyInfo.cs";
 		}
 		
+		if(!regexPattern.equals("")){
+			this.regexPattern = regexPattern;	
+		} else{
+			this.regexPattern = "Version[(]\"[\\d\\.]+\"[)]";
+		}
+		
+		if(!replacementPattern.equals("")){
+			this.replacementPattern = replacementPattern;	
+		} else{
+			this.replacementPattern = "Version(\"%s\")";
+		}		
 	}
 	
 	/**
@@ -37,10 +50,10 @@ public class ChangeTools {
 		listener.getLogger().println("Listing files");				
 		List<FilePath> fileList = getFiles(fpList, listener);		
 		if(fileList.size() > 0){									
-			String pattern = "Version[(]\"[\\d\\.]+\"[)]";
+			String pattern = regexPattern;
 			for(FilePath file : fileList){			
 				String content = file.readToString();				
-				content = content.replaceAll(pattern, String.format("Version(\"%s\")", version));
+				content = content.replaceAll(pattern, String.format(replacementPattern, version));
 				listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
 				file.write(content, null);							
 			}

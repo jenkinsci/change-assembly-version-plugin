@@ -31,11 +31,15 @@ public class ChangeAssemblyVersion extends Builder{
 	
 	private final String task;
 	private final String assemblyFile;
+	private final String regexPattern;
+	private final String replacementPattern;
 	
 	@DataBoundConstructor
-	public ChangeAssemblyVersion(String task, String assemblyFile){
+	public ChangeAssemblyVersion(String task, String assemblyFile, String regexPattern,String replacementPattern){
 		this.task = task;
 		this.assemblyFile = assemblyFile;
+		this.regexPattern= regexPattern;
+		this.replacementPattern= replacementPattern;
 	}
 	
 	public String getTask(){
@@ -44,6 +48,14 @@ public class ChangeAssemblyVersion extends Builder{
 	
 	public String getAssemblyFile(){
 		return this.assemblyFile;
+	}
+	
+	public String getRegexPattern(){
+		return this.regexPattern;
+	}
+	
+	public String getReplacementPattern(){
+		return this.replacementPattern;
 	}
 	
 	/**
@@ -65,7 +77,7 @@ public class ChangeAssemblyVersion extends Builder{
 	        String version = new AssemblyVersion(this.task, envVars).getVersion();
 	        listener.getLogger().println(String.format("Changing the AssemblyInfo.cs to version : %s", version));
 	        List<FilePath> fp = build.getWorkspace().child(envVars.get("WORKSPACE")).list();	        
-	        new ChangeTools(this.assemblyFile).ReplaceAllProperties(fp, version, listener);
+	        new ChangeTools(this.assemblyFile,this.regexPattern,this.replacementPattern).ReplaceAllProperties(fp, version, listener);
     	}catch(Exception ex){    		
     		StringWriter sw = new StringWriter();
     		ex.printStackTrace(new PrintWriter(sw));    		
