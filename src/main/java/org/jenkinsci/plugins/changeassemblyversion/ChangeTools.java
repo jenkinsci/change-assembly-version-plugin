@@ -19,19 +19,19 @@ public class ChangeTools {
 	private final String replacementPattern;
 	
 	public ChangeTools(String fileName,String regexPattern,String replacementPattern){
-		if(!fileName.equals("")){
+		if(fileName!=null && !fileName.equals("")){
 			this.fileName = fileName;	
 		} else{
 			this.fileName = "AssemblyInfo.cs";
 		}
 		
-		if(!regexPattern.equals("")){
+		if(regexPattern!=null && !regexPattern.equals("")){
 			this.regexPattern = regexPattern;	
 		} else{
 			this.regexPattern = "Version[(]\"[\\d\\.]+\"[)]";
 		}
 		
-		if(!replacementPattern.equals("")){
+		if(replacementPattern!=null && !replacementPattern.equals("")){
 			this.replacementPattern = replacementPattern;	
 		} else{
 			this.replacementPattern = "Version(\"%s\")";
