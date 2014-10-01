@@ -40,7 +40,7 @@
 	</developers>
 	<groupId>org.jenkinsci.plugins</groupId>
 	<artifactId>change-assembly-version-plugin</artifactId>
-	<version>1.4.1</version>
+	<version>1.5</version>
 	<packaging>hpi</packaging>
 
 	<licenses>
