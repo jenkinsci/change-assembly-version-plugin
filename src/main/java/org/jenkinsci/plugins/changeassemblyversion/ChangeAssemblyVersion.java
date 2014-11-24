@@ -74,7 +74,7 @@ public class ChangeAssemblyVersion extends Builder{
     	try{
     		EnvVars envVars = new EnvVars();
         	envVars = build.getEnvironment(listener);	               
-	        String version = new AssemblyVersion(this.task, envVars).getVersion();
+	        String version = new AssemblyVersion(this.task, envVars, listener).getVersion();
 	        listener.getLogger().println(String.format("Changing the AssemblyInfo.cs to version : %s", version));
 	        List<FilePath> fp = build.getWorkspace().child(envVars.get("WORKSPACE")).list();	        
 	        new ChangeTools(this.assemblyFile,this.regexPattern,this.replacementPattern).ReplaceAllProperties(fp, version, listener);

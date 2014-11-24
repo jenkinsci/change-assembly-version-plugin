@@ -53,6 +53,7 @@ public class ChangeTools {
 			String pattern = regexPattern;
 			for(FilePath file : fileList){			
 				String content = file.readToString();				
+				listener.getLogger().println(String.format("Updating file : %s, Version : %s", file.getRemote(), version));
 				content = content.replaceAll(pattern, String.format(replacementPattern, version));
 				listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
 				file.write(content, null);							
