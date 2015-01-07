@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.532.3</version>
+		<version>1.554.3</version>
 	</parent>
 	<properties>
 		<jenkins.buildId>${env.BUILD_ID}</jenkins.buildId>
@@ -18,50 +18,50 @@
 		<jenkins.workspace>${env.WORKSPACE}</jenkins.workspace>
 	</properties>
 	
-	  <distributionManagement>
-		<repository>
-		  <id>maven.jenkins-ci.org</id>
-		  <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
-		</repository>
-	  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>maven.jenkins-ci.org</id>
+            <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
   
-	<scm>
-		<connection>scm:git:ssh://github.com/jenkinsci/change-assembly-version-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/change-assembly-version-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/change-assembly-version-plugin</url>
-	</scm>
+    <scm>
+        <connection>scm:git:ssh://github.com/jenkinsci/change-assembly-version-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/change-assembly-version-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/change-assembly-version-plugin</url>
+    </scm>
 	
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/Change+Assembly+Version</url>
-	<developers>
-		<developer>
-		  <id>lkobus</id>
-		  <name>Leonardo Kobus</name>		  
-		</developer>
-	</developers>
-	<groupId>org.jenkinsci.plugins</groupId>
-	<artifactId>change-assembly-version-plugin</artifactId>
-	<version>1.5</version>
-	<packaging>hpi</packaging>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Change+Assembly+Version</url>
+    <developers>
+        <developer>
+            <id>lkobus</id>
+            <name>Leonardo Kobus</name>		  
+        </developer>
+    </developers>
+    <groupId>org.jenkinsci.plugins</groupId>
+    <artifactId>change-assembly-version-plugin</artifactId>
+    <version>1.5</version>
+    <packaging>hpi</packaging>
 
-	<licenses>
-	<license>
-	  <name>MIT License</name>
-	  <url>http://opensource.org/licenses/MIT</url>
-	</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
 	
-	<repositories>
-	<repository>
-	  <id>repo.jenkins-ci.org</id>
-	  <url>http://repo.jenkins-ci.org/public/</url>
-	</repository>
-	</repositories>
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
-	<pluginRepositories>
-	<pluginRepository>
-	  <id>repo.jenkins-ci.org</id>
-	  <url>http://repo.jenkins-ci.org/public/</url>
-	</pluginRepository>
-  </pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>
