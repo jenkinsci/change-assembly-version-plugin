@@ -65,11 +65,46 @@ public class ReplacementsTest {
                 return true;
             }
         });
-        project.getBuildersList().add(new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "AssemblyVersion.cs", "", ""));
+        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "AssemblyVersion.cs", "", "");
+        project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
         //String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child("AssemblyVersion.cs").readToString();
         assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
+        assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
+    }
+    
+    @Test
+    public void testResolveEnvironmentVariables_recursively_excludingSvn() throws InterruptedException, IOException, Exception {
+
+        EnvironmentVariablesNodeProperty prop = new EnvironmentVariablesNodeProperty();
+        EnvVars envVars = prop.getEnvVars();
+        envVars.put("PREFIX", "1.1.0");
+        j.jenkins.getGlobalNodeProperties().add(prop);
+        FreeStyleProject project = j.createFreeStyleProject();
+        final String f1 = "myassembly/properties/AssemblyInfo.cs";
+        final String f2 = ".svn/myassembly/properties/AssemblyInfo.cs";
+        final String c = "using System.Reflection;\n" +
+"\n" +
+"[assembly: AssemblyVersion(\"13.1.1.976\")]";
+        project.getBuildersList().add(new TestBuilder() {
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
+                    BuildListener listener) throws InterruptedException, IOException {
+                build.getWorkspace().child(f1).write(c, "UTF-8");
+                build.getWorkspace().child(f2).write(c, "UTF-8");
+                return true;
+            }
+        });
+        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "", "", "");
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+
+        //String s = FileUtils.readFileToString(build.getLogFile());
+        String content = build.getWorkspace().child(f1).readToString();
+        assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
+        content = build.getWorkspace().child(f2).readToString();
+        assertTrue(content.contains("AssemblyVersion(\"13.1.1.976"));
+        assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
     }
 }

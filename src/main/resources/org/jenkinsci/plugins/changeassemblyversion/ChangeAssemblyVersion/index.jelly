@@ -1,3 +1,3 @@
 <div>
-  This plugin add support for change the AssemblyInfo files version.
+  This plugin lets the user modify the AssemblyVersion and AssemblyFileVersion attributes, typically contained in the AssemblyInfo.cs file.
 </div>
