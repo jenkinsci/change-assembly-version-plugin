@@ -2,29 +2,16 @@ package org.jenkinsci.plugins.changeassemblyversion;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
-import java.util.Map;
-
 import hudson.EnvVars;
 import hudson.Extension;
-import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
-import hudson.model.Environment;
-import hudson.model.EnvironmentList;
-import hudson.model.EnvironmentContributor;
-import hudson.model.FreeStyleProject;
-import hudson.model.Job;
-import hudson.model.ParametersAction;
-import hudson.model.StringParameterValue;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
-import java.io.File;
 import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.types.FileSet;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -46,7 +33,7 @@ public class ChangeAssemblyVersion extends Builder {
         this.replacementPattern = replacementPattern;
     }
 
-    public String getTask() {
+    public String getVersionPattern() {
         return this.task;
     }
 
@@ -80,19 +67,19 @@ public class ChangeAssemblyVersion extends Builder {
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         try {
-            EnvVars envVars = new EnvVars();
-            envVars = build.getEnvironment(listener);
-            String version = new AssemblyVersion(this.task, envVars).getVersion();
-            listener.getLogger().println(String.format("Changing the AssemblyInfo.cs to version : %s", version));
-            List<FilePath> fp = build.getWorkspace().child(envVars.get("WORKSPACE")).list();
-            FileSet fileSet = new FileSet();
-            org.apache.tools.ant.Project project = new org.apache.tools.ant.Project();
-            fileSet.setProject(project);
-            fileSet.setDir(new File(build.getWorkspace().toURI().getPath()));
-            fileSet.setIncludes(this.assemblyFile);
+            String assemblyGlob = this.assemblyFile == null || this.assemblyFile.equals("") ? "**/AssemblyInfo.cs" : this.assemblyFile;
 
-            for (String file : fileSet.getDirectoryScanner(project).getIncludedFiles()) {
-                new ChangeTools(file, this.regexPattern, this.replacementPattern).ReplaceAllProperties(fp, version, listener);
+            EnvVars envVars = build.getEnvironment(listener);
+            String version = new AssemblyVersion(this.task, envVars).getVersion();
+            if (task == null || StringUtils.isEmpty(task))
+            {
+                listener.getLogger().println("Please provide a valid version pattern.");
+                return false;
+            }
+            listener.getLogger().println(String.format("Changing the file(s) %s to version : %s", assemblyGlob, version));
+            for (FilePath f : build.getWorkspace().list(assemblyGlob))
+            {
+                new ChangeTools(f, this.regexPattern, this.replacementPattern).Replace(version, listener);                
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
