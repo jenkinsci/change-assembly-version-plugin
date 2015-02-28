@@ -20,21 +20,21 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class ChangeAssemblyVersion extends Builder {
 
-    private final String task;
+    private final String versionPattern;
     private final String assemblyFile;
     private final String regexPattern;
     private final String replacementPattern;
 
     @DataBoundConstructor
-    public ChangeAssemblyVersion(String task, String assemblyFile, String regexPattern, String replacementPattern) {
-        this.task = task;
+    public ChangeAssemblyVersion(String versionPattern, String assemblyFile, String regexPattern, String replacementPattern) {
+        this.versionPattern = versionPattern;
         this.assemblyFile = assemblyFile;
         this.regexPattern = regexPattern;
         this.replacementPattern = replacementPattern;
     }
 
     public String getVersionPattern() {
-        return this.task;
+        return this.versionPattern;
     }
 
     public String getAssemblyFile() {
@@ -54,7 +54,7 @@ public class ChangeAssemblyVersion extends Builder {
      * The perform method is gonna search all the file named "Assemblyinfo.cs"
      * in any folder below, and after found will change the version of
      * AssemblyVersion and AssemblyFileVersion in the file for the inserted
-     * version (task property value).
+     * version (versionPattern property value).
      *
      *
      * OBS: The inserted value can be some jenkins variable like ${BUILD_NUMBER}
@@ -70,8 +70,8 @@ public class ChangeAssemblyVersion extends Builder {
             String assemblyGlob = this.assemblyFile == null || this.assemblyFile.equals("") ? "**/AssemblyInfo.cs" : this.assemblyFile;
 
             EnvVars envVars = build.getEnvironment(listener);
-            String version = new AssemblyVersion(this.task, envVars).getVersion();
-            if (task == null || StringUtils.isEmpty(task))
+            String version = new AssemblyVersion(this.versionPattern, envVars).getVersion();
+            if (versionPattern == null || StringUtils.isEmpty(versionPattern))
             {
                 listener.getLogger().println("Please provide a valid version pattern.");
                 return false;
