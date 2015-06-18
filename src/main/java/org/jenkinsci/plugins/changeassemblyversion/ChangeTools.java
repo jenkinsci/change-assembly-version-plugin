@@ -26,11 +26,11 @@ public class ChangeTools {
         }
     }
 
-    public void Replace(String version, BuildListener listener) throws IOException, InterruptedException {
+    public void Replace(String replacement, BuildListener listener) throws IOException, InterruptedException {
         String content = file.readToString();
-        listener.getLogger().println(String.format("Updating file : %s, Version : %s", file.getRemote(), version));
-        content = content.replaceAll(regexPattern, String.format(replacementPattern, version));
-        listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
+        listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
+        content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
+        //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
         file.write(content, null);
     }
 }

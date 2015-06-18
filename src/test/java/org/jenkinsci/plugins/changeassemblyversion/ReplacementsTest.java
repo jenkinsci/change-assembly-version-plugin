@@ -61,17 +61,34 @@ public class ReplacementsTest {
                     BuildListener listener) throws InterruptedException, IOException {
                 build.getWorkspace().child("AssemblyVersion.cs").write("using System.Reflection;\n" +
 "\n" +
+"[assembly: AssemblyTitle(\"\")]\n" +
+"[assembly: AssemblyDescription(\"\")]\n" +
+"[assembly: AssemblyCompany(\"\")]\n" +
+"[assembly: AssemblyProduct(\"\")]\n" +
+"[assembly: AssemblyCopyright(\"\")]\n" +
+"[assembly: AssemblyTrademark(\"\")]\n" +
+"[assembly: AssemblyCulture(\"\")]\n" +
 "[assembly: AssemblyVersion(\"13.1.1.976\")]", "UTF-8");
                 return true;
             }
         });
-        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "AssemblyVersion.cs", "", "");
+        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "AssemblyVersion.cs", "", "", "MyTitle", "MyDescription", "MyCompany", "MyProduct", "MyCopyright", "MyTrademark", "MyCulture");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
         //String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child("AssemblyVersion.cs").readToString();
         assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
+        
+        // Check that we update additional assembly info
+        assertTrue(content.contains("AssemblyTitle(\"MyTitle"));
+        assertTrue(content.contains("AssemblyDescription(\"MyDescription"));
+        assertTrue(content.contains("AssemblyCompany(\"MyCompany"));
+        assertTrue(content.contains("AssemblyProduct(\"MyProduct"));
+        assertTrue(content.contains("AssemblyCopyright(\"MyCopyright"));
+        assertTrue(content.contains("AssemblyTrademark(\"MyTrademark"));
+        assertTrue(content.contains("AssemblyCulture(\"MyCulture"));
+        
         assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
     }
     
@@ -96,7 +113,7 @@ public class ReplacementsTest {
                 return true;
             }
         });
-        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "", "", "");
+        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "", "", "", "", "", "", "", "", "", "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
