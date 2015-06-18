@@ -129,14 +129,27 @@ public class ChangeAssemblyVersion extends Builder {
                 listener.getLogger().println("Please provide a valid version pattern.");
                 return false;
             }
+            
+            // Expand env variables
+            String assemblyTitle = envVars.expand(this.assemblyTitle);
+            String assemblyDescription = envVars.expand(this.assemblyDescription);
+            String assemblyCompany = envVars.expand(this.assemblyCompany);
+            String assemblyProduct = envVars.expand(this.assemblyProduct);
+            String assemblyCopyright = envVars.expand(this.assemblyCopyright);
+            String assemblyTrademark = envVars.expand(this.assemblyTrademark);
+            String assemblyCulture = envVars.expand(this.assemblyCulture);
+            
+            
+            // Log new expanded values
             listener.getLogger().println(String.format("Changing File(s): %s", assemblyGlob));
-            listener.getLogger().println(String.format("Assembly Title : %s",  this.assemblyTitle));
-            listener.getLogger().println(String.format("Assembly Description : %s",  this.assemblyDescription));
-            listener.getLogger().println(String.format("Assembly Company : %s",  this.assemblyCompany));
-            listener.getLogger().println(String.format("Assembly Product : %s",  this.assemblyProduct));
-            listener.getLogger().println(String.format("Assembly Copyright : %s",  this.assemblyCopyright));
-            listener.getLogger().println(String.format("Assembly Trademark : %s",  this.assemblyTrademark));
-            listener.getLogger().println(String.format("Assembly Culture : %s",  this.assemblyCulture));
+            listener.getLogger().println(String.format("Assembly Version : %s",  version));
+            listener.getLogger().println(String.format("Assembly Title : %s",  assemblyTitle));
+            listener.getLogger().println(String.format("Assembly Description : %s",  assemblyDescription));
+            listener.getLogger().println(String.format("Assembly Company : %s",  assemblyCompany));
+            listener.getLogger().println(String.format("Assembly Product : %s",  assemblyProduct));
+            listener.getLogger().println(String.format("Assembly Copyright : %s",  assemblyCopyright));
+            listener.getLogger().println(String.format("Assembly Trademark : %s",  assemblyTrademark));
+            listener.getLogger().println(String.format("Assembly Culture : %s",  assemblyCulture));
             
             for (FilePath f : build.getWorkspace().list(assemblyGlob))
             {
@@ -145,13 +158,13 @@ public class ChangeAssemblyVersion extends Builder {
                 
                 // Set new things, empty string being ok for them.
                 // TODO: Would we need a regex for these or just blast as we are doing now?
-                new ChangeTools(f, "AssemblyTitle[(]\".*\"[)]", "AssemblyTitle(\"%s\")").Replace(this.assemblyTitle, listener);            
-                new ChangeTools(f, "AssemblyDescription[(]\".*\"[)]", "AssemblyDescription(\"%s\")").Replace(this.assemblyDescription, listener);
-                new ChangeTools(f, "AssemblyCompany[(]\".*\"[)]", "AssemblyCompany(\"%s\")").Replace(this.assemblyCompany, listener);
-                new ChangeTools(f, "AssemblyProduct[(]\".*\"[)]", "AssemblyProduct(\"%s\")").Replace(this.assemblyProduct, listener);
-                new ChangeTools(f, "AssemblyCopyright[(]\".*\"[)]", "AssemblyCopyright(\"%s\")").Replace(this.assemblyCopyright, listener);
-                new ChangeTools(f, "AssemblyTrademark[(]\".*\"[)]", "AssemblyTrademark(\"%s\")").Replace(this.assemblyTrademark, listener);
-                new ChangeTools(f, "AssemblyCulture[(]\".*\"[)]", "AssemblyCulture(\"%s\")").Replace(this.assemblyCulture, listener);
+                new ChangeTools(f, "AssemblyTitle[(]\".*\"[)]", "AssemblyTitle(\"%s\")").Replace(assemblyTitle, listener);            
+                new ChangeTools(f, "AssemblyDescription[(]\".*\"[)]", "AssemblyDescription(\"%s\")").Replace(assemblyDescription, listener);
+                new ChangeTools(f, "AssemblyCompany[(]\".*\"[)]", "AssemblyCompany(\"%s\")").Replace(assemblyCompany, listener);
+                new ChangeTools(f, "AssemblyProduct[(]\".*\"[)]", "AssemblyProduct(\"%s\")").Replace(assemblyProduct, listener);
+                new ChangeTools(f, "AssemblyCopyright[(]\".*\"[)]", "AssemblyCopyright(\"%s\")").Replace(assemblyCopyright, listener);
+                new ChangeTools(f, "AssemblyTrademark[(]\".*\"[)]", "AssemblyTrademark(\"%s\")").Replace(assemblyTrademark, listener);
+                new ChangeTools(f, "AssemblyCulture[(]\".*\"[)]", "AssemblyCulture(\"%s\")").Replace(assemblyCulture, listener);
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
