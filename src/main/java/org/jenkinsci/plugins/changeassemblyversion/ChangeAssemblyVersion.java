@@ -24,13 +24,38 @@ public class ChangeAssemblyVersion extends Builder {
     private final String assemblyFile;
     private final String regexPattern;
     private final String replacementPattern;
+    private final String assemblyTitle;
+    private final String assemblyDescription;
+    private final String assemblyCompany;
+    private final String assemblyProduct;
+    private final String assemblyCopyright;
+    private final String assemblyTrademark;
+    private final String assemblyCulture;
 
     @DataBoundConstructor
-    public ChangeAssemblyVersion(String versionPattern, String assemblyFile, String regexPattern, String replacementPattern) {
+    public ChangeAssemblyVersion(String versionPattern, 
+        String assemblyFile, 
+        String regexPattern, 
+        String replacementPattern, 
+        String assemblyTitle,
+        String assemblyDescription,
+        String assemblyCompany,
+        String assemblyProduct,
+        String assemblyCopyright,
+        String assemblyTrademark,
+        String assemblyCulture
+        ) {
         this.versionPattern = versionPattern;
         this.assemblyFile = assemblyFile;
         this.regexPattern = regexPattern;
         this.replacementPattern = replacementPattern;
+        this.assemblyTitle = assemblyTitle;
+        this.assemblyDescription = assemblyDescription;
+        this.assemblyCompany = assemblyCompany;
+        this.assemblyProduct = assemblyProduct;
+        this.assemblyCopyright = assemblyCopyright;
+        this.assemblyTrademark = assemblyTrademark;
+        this.assemblyCulture = assemblyCulture;
     }
 
     public String getVersionPattern() {
@@ -48,7 +73,35 @@ public class ChangeAssemblyVersion extends Builder {
     public String getReplacementPattern() {
         return this.replacementPattern;
     }
+    
+    public String getAssemblyTitle() {
+        return this.assemblyTitle;
+    }
+    
+    public String getAssemblyDescription() {
+        return this.assemblyDescription;
+    }
+    
+    public String getAssemblyCompany() {
+        return this.assemblyCompany;
+    }
+    
+    public String getAssemblyProduct() {
+        return this.assemblyProduct;
+    }            
 
+    public String getAssemblyCopyright() {
+        return this.assemblyCopyright;
+    }
+
+    public String getAssemblyTrademark() {
+        return this.assemblyTrademark;
+    }
+    
+    public String getAssemblyCulture() {
+        return this.assemblyCulture;
+    }
+    
     /**
      *
      * The perform method is gonna search all the file named "Assemblyinfo.cs"
@@ -76,10 +129,42 @@ public class ChangeAssemblyVersion extends Builder {
                 listener.getLogger().println("Please provide a valid version pattern.");
                 return false;
             }
-            listener.getLogger().println(String.format("Changing the file(s) %s to version : %s", assemblyGlob, version));
+            
+            // Expand env variables
+            String assemblyTitle = envVars.expand(this.assemblyTitle);
+            String assemblyDescription = envVars.expand(this.assemblyDescription);
+            String assemblyCompany = envVars.expand(this.assemblyCompany);
+            String assemblyProduct = envVars.expand(this.assemblyProduct);
+            String assemblyCopyright = envVars.expand(this.assemblyCopyright);
+            String assemblyTrademark = envVars.expand(this.assemblyTrademark);
+            String assemblyCulture = envVars.expand(this.assemblyCulture);
+            
+            
+            // Log new expanded values
+            listener.getLogger().println(String.format("Changing File(s): %s", assemblyGlob));
+            listener.getLogger().println(String.format("Assembly Version : %s",  version));
+            listener.getLogger().println(String.format("Assembly Title : %s",  assemblyTitle));
+            listener.getLogger().println(String.format("Assembly Description : %s",  assemblyDescription));
+            listener.getLogger().println(String.format("Assembly Company : %s",  assemblyCompany));
+            listener.getLogger().println(String.format("Assembly Product : %s",  assemblyProduct));
+            listener.getLogger().println(String.format("Assembly Copyright : %s",  assemblyCopyright));
+            listener.getLogger().println(String.format("Assembly Trademark : %s",  assemblyTrademark));
+            listener.getLogger().println(String.format("Assembly Culture : %s",  assemblyCulture));
+            
             for (FilePath f : build.getWorkspace().list(assemblyGlob))
             {
-                new ChangeTools(f, this.regexPattern, this.replacementPattern).Replace(version, listener);                
+                // Update the AssemblyVerion and AssemblyFileVersion
+                new ChangeTools(f, this.regexPattern, this.replacementPattern).Replace(version, listener);
+                
+                // Set new things, empty string being ok for them.
+                // TODO: Would we need a regex for these or just blast as we are doing now?
+                new ChangeTools(f, "AssemblyTitle[(]\".*\"[)]", "AssemblyTitle(\"%s\")").Replace(assemblyTitle, listener);            
+                new ChangeTools(f, "AssemblyDescription[(]\".*\"[)]", "AssemblyDescription(\"%s\")").Replace(assemblyDescription, listener);
+                new ChangeTools(f, "AssemblyCompany[(]\".*\"[)]", "AssemblyCompany(\"%s\")").Replace(assemblyCompany, listener);
+                new ChangeTools(f, "AssemblyProduct[(]\".*\"[)]", "AssemblyProduct(\"%s\")").Replace(assemblyProduct, listener);
+                new ChangeTools(f, "AssemblyCopyright[(]\".*\"[)]", "AssemblyCopyright(\"%s\")").Replace(assemblyCopyright, listener);
+                new ChangeTools(f, "AssemblyTrademark[(]\".*\"[)]", "AssemblyTrademark(\"%s\")").Replace(assemblyTrademark, listener);
+                new ChangeTools(f, "AssemblyCulture[(]\".*\"[)]", "AssemblyCulture(\"%s\")").Replace(assemblyCulture, listener);
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
