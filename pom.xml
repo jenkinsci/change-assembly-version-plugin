@@ -17,7 +17,16 @@
 		<jenkins.svnRevision>${env.SVN_REVISION}</jenkins.svnRevision>
 		<jenkins.workspace>${env.WORKSPACE}</jenkins.workspace>
 	</properties>
-	<build>
+    <dependencies>
+        <dependency>
+            <groupId>com.googlecode.juniversalchardet</groupId>
+            <artifactId>juniversalchardet</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
 		<plugins>
 			<plugin>
 				<groupId>org.jenkins-ci.tools</groupId>

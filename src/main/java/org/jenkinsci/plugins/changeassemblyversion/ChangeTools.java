@@ -29,6 +29,7 @@ public class ChangeTools {
     public void Replace(String replacement, BuildListener listener) throws IOException, InterruptedException {
         if (replacement != null && !replacement.isEmpty())
         {
+
             String content = file.readToString();  // needs to use read() instead!
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
             content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
@@ -40,4 +41,5 @@ public class ChangeTools {
             listener.getLogger().println(String.format("Skipping replacement because value is empty."));
         }
     }
+
 }
