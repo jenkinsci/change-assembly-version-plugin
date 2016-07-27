@@ -12,6 +12,7 @@ import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -120,24 +121,24 @@ public class ChangeAssemblyVersion extends Builder {
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         try {
-            String assemblyGlob = this.assemblyFile == null || this.assemblyFile.equals("") ? "**/AssemblyInfo.cs" : this.assemblyFile;
+            String assemblyGlob = this.assemblyFile == null || this.assemblyFile.equals("") ? "**/AssemblyInfo.cs" : TokenMacro.expandAll(build, listener, this.assemblyFile);
 
             EnvVars envVars = build.getEnvironment(listener);
-            String version = new AssemblyVersion(this.versionPattern, envVars).getVersion();
+            String version = TokenMacro.expandAll(build, listener, this.versionPattern);
             if (versionPattern == null || StringUtils.isEmpty(versionPattern))
             {
                 listener.getLogger().println("Please provide a valid version pattern.");
                 return false;
             }
             
-            // Expand env variables
-            String assemblyTitle = envVars.expand(this.assemblyTitle);
-            String assemblyDescription = envVars.expand(this.assemblyDescription);
-            String assemblyCompany = envVars.expand(this.assemblyCompany);
-            String assemblyProduct = envVars.expand(this.assemblyProduct);
-            String assemblyCopyright = envVars.expand(this.assemblyCopyright);
-            String assemblyTrademark = envVars.expand(this.assemblyTrademark);
-            String assemblyCulture = envVars.expand(this.assemblyCulture);
+            // Expand env variables and token macros
+            String assemblyTitle = TokenMacro.expandAll(build, listener, this.assemblyTitle);
+            String assemblyDescription = TokenMacro.expandAll(build, listener, this.assemblyDescription);
+            String assemblyCompany = TokenMacro.expandAll(build, listener, this.assemblyCompany);
+            String assemblyProduct = TokenMacro.expandAll(build, listener, this.assemblyProduct);
+            String assemblyCopyright = TokenMacro.expandAll(build, listener, this.assemblyCopyright);
+            String assemblyTrademark = TokenMacro.expandAll(build, listener, this.assemblyTrademark);
+            String assemblyCulture = TokenMacro.expandAll(build, listener, this.assemblyCulture);
             
             
             // Log new expanded values
