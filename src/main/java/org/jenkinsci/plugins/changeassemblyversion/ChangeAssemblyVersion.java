@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -88,7 +87,7 @@ public class ChangeAssemblyVersion extends Builder {
         this.assemblyInfoVersionString = String.format(BasePattern, "AssemblyInformationalVersion (\"%s\")");
         this.assemblyVersionString = String.format(BasePattern, "AssemblyVersion (\"%s\")");
 
-        this.BASE_REGEX = "\\s*\\[\\s*assembly:\\s*%s\\s*\\(\\s*\\\".*\\\"\\s*\\)\\s*\\]"; //ok
+        this.BASE_REGEX = "\\[\\s*assembly:\\s*%s\\s*\\(\\s*\\\".*\\\"\\s*\\)\\s*\\]"; //ok
         this.assemblyCultureRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCulture"));
         this.assemblyTrademarkRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyTrademark"));
         this.assemblyCopyrightRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCopyright"));
@@ -208,9 +207,9 @@ public class ChangeAssemblyVersion extends Builder {
                 throw new AbortException("Unable to retrieve workspace");
             } else {
                 for (FilePath f : workspace.list(assemblyGlob)) {
-                    ChangeTools.replaceOrAppend(f, assemblyTitleRegex, expandedAssemblyVersion, assemblyVersionString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyTitleRegex, expandedAssemblyFileVersion, assemblyFileVersionString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyTitleRegex, expandedAssemblyInformationalVersion, assemblyInfoVersionString, listener);
+                    ChangeTools.replaceOrAppend(f, assemblyVersionRegex, expandedAssemblyVersion, assemblyVersionString, listener);
+                    ChangeTools.replaceOrAppend(f, assemblyFileVersionRegex, expandedAssemblyFileVersion, assemblyFileVersionString, listener);
+                    ChangeTools.replaceOrAppend(f, assemblyInfoVersionRegex, expandedAssemblyInformationalVersion, assemblyInfoVersionString, listener);
 
                     // Set new things, empty string being ok for them.
                     // TODO: Would we need a regex for these or just blast as we are doing now?

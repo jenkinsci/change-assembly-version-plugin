@@ -20,7 +20,7 @@ public class ChangeTools {
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
             //String newContent = content.replaceAll(regexPattern.toString(), String.format(replacementPattern, replacement));
             String newContent = regexPattern.matcher(content).replaceFirst(String.format(replacementPattern, replacement));
-            listener.getLogger().println(String.format("regex= %s",regexPattern.matcher(content)));
+            listener.getLogger().println(String.format("regex= %s",regexPattern.matcher(content).pattern()));
             if(content.equals(newContent)){
                 newContent+=System.lineSeparator()+String.format(replacementPattern, replacement);
             }
