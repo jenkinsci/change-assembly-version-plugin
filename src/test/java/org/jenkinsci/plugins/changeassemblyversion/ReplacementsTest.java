@@ -74,12 +74,13 @@ public class ReplacementsTest {
         ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "$PREFIX.${BUILD_NUMBER}", "$PREFIX.${BUILD_NUMBER}.0", "AssemblyVersion.cs", "MyTitle", "MyDescription", "MyCompany", "MyProduct", "MyCopyright", "MyTrademark", "MyCulture");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
-
+        int buildNumber=build.number;
+        
         //String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child("AssemblyVersion.cs").readToString();
-        assertTrue(content.contains("AssemblyVersion(\"1.1.${BUILD_NUMBER}"));
-        assertTrue(content.contains("AssemblyFileVersion(\"1.1.${BUILD_NUMBER}"));
-        assertTrue(content.contains("AssemblyInformationalVersion(\"1.1.${BUILD_NUMBER}.0"));
+        assertTrue(content.contains("AssemblyVersion(\"1.1."+buildNumber+"\""));
+        assertTrue(content.contains("AssemblyFileVersion(\"1.1."+buildNumber+"\""));
+        assertTrue(content.contains("AssemblyInformationalVersion(\"1.1."+buildNumber+".0"));
         
         // Check that we update additional assembly info
         assertTrue(content.contains("AssemblyTitle(\"MyTitle"));
@@ -118,10 +119,10 @@ public class ReplacementsTest {
         ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "", "", "", "", "", "", "", "", "", "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
-
+        int buildNumber=build.number;
         //String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child(f1).readToString();
-        assertTrue(content,content.contains("AssemblyVersion(\"1.1.0.${BUILD_NUMBER}"));
+        assertTrue(content,content.contains("AssemblyVersion(\"1.1.0."+buildNumber+"\""));
         content = build.getWorkspace().child(f2).readToString();
         assertTrue(content,content.contains("AssemblyVersion(\"13.1.1.976"));
         assertTrue(builder.getAssemblyVersion().equals("$PREFIX.${BUILD_NUMBER}"));

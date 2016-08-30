@@ -76,16 +76,16 @@ public class ChangeAssemblyVersion extends Builder {
             String assemblyCulture
     ) {
         this.BasePattern = "[assembly: %s]";
-        this.assemblyCultureString = String.format(BasePattern, "AssemblyCulture (\"%s\")");
-        this.assemblyTrademarkString = String.format(BasePattern, "AssemblyTrademark (\"%s\")");
-        this.assemblyCopyrightString = String.format(BasePattern, "AssemblyCopyright (\"%s\")");
-        this.assemblyProductString = String.format(BasePattern, "AssemblyProduct (\"%s\")");
-        this.assemblyCompanyString = String.format(BasePattern, "AssemblyCompany (\"%s\")");
-        this.assemblyDescriptionString = String.format(BasePattern, "AssemblyDescription (\"%s\")");
-        this.assemblyTitleString = String.format(BasePattern, "AssemblyTitle (\"%s\")");
-        this.assemblyFileVersionString = String.format(BasePattern, "AssemblyFileVersion (\"%s\")");
-        this.assemblyInfoVersionString = String.format(BasePattern, "AssemblyInformationalVersion (\"%s\")");
-        this.assemblyVersionString = String.format(BasePattern, "AssemblyVersion (\"%s\")");
+        this.assemblyCultureString = String.format(BasePattern, "AssemblyCulture(\"%s\")");
+        this.assemblyTrademarkString = String.format(BasePattern, "AssemblyTrademark(\"%s\")");
+        this.assemblyCopyrightString = String.format(BasePattern, "AssemblyCopyright(\"%s\")");
+        this.assemblyProductString = String.format(BasePattern, "AssemblyProduct(\"%s\")");
+        this.assemblyCompanyString = String.format(BasePattern, "AssemblyCompany(\"%s\")");
+        this.assemblyDescriptionString = String.format(BasePattern, "AssemblyDescription(\"%s\")");
+        this.assemblyTitleString = String.format(BasePattern, "AssemblyTitle(\"%s\")");
+        this.assemblyFileVersionString = String.format(BasePattern, "AssemblyFileVersion(\"%s\")");
+        this.assemblyInfoVersionString = String.format(BasePattern, "AssemblyInformationalVersion(\"%s\")");
+        this.assemblyVersionString = String.format(BasePattern, "AssemblyVersion(\"%s\")");
 
         this.BASE_REGEX = "\\[\\s*assembly:\\s*%s\\s*\\(\\s*\\\".*\\\"\\s*\\)\\s*\\]"; //ok
         this.assemblyCultureRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCulture"));
