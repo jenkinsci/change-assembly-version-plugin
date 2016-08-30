@@ -2,42 +2,35 @@ package org.jenkinsci.plugins.changeassemblyversion;
 
 import hudson.FilePath;
 import hudson.model.BuildListener;
-
 import java.io.IOException;
+import java.util.regex.Pattern;
+import org.apache.commons.io.input.BOMInputStream;
 
 public class ChangeTools {
 
-    private final FilePath file;
-    private final String regexPattern;
-    private final String replacementPattern;
-
-    ChangeTools(FilePath f, String regexPattern, String replacementPattern) {
-        this.file = f;
-        if (regexPattern != null && !regexPattern.equals("")) {
-            this.regexPattern = regexPattern;
-        } else {
-            this.regexPattern = "Version[(]\"[\\d\\.]+\"[)]";
-        }
-
-        if (replacementPattern != null && !replacementPattern.equals("")) {
-            this.replacementPattern = replacementPattern;
-        } else {
-            this.replacementPattern = "Version(\"%s\")";
-        }
+    ChangeTools() {
     }
 
-    public void Replace(String replacement, BuildListener listener) throws IOException, InterruptedException {
+    public static void replaceOrAppend(FilePath file, Pattern regexPattern, String replacement, String replacementPattern,BuildListener listener) throws IOException, InterruptedException {
         if (replacement != null && !replacement.isEmpty())
         {
-            String content = file.readToString();  // needs to use read() instead!
+            BOMInputStream bs = new BOMInputStream(file.read());        //removes BOM
+            String content = org.apache.commons.io.IOUtils.toString(bs);
+            //String content = file.readToString();  // needs to use read() instead!
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
-            content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
+            //String newContent = content.replaceAll(regexPattern.toString(), String.format(replacementPattern, replacement));
+            String newContent = regexPattern.matcher(content).replaceFirst(String.format(replacementPattern, replacement));
+            listener.getLogger().println(String.format("regex= %s",regexPattern.matcher(content)));
+            if(content.equals(newContent)){
+                newContent+=System.lineSeparator()+String.format(replacementPattern, replacement);
+            }
+            
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
-            file.write(content, null);
+            file.write(newContent, null);
         }
         else
         {
-            listener.getLogger().println(String.format("Skipping replacement because value is empty."));
+            listener.getLogger().println(String.format("Skipping replacement because replacemnt value is empty."));
         }
     }
 }

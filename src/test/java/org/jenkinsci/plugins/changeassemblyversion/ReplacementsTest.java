@@ -31,8 +31,6 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.slaves.EnvironmentVariablesNodeProperty;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,10 +51,11 @@ public class ReplacementsTest {
 
         EnvironmentVariablesNodeProperty prop = new EnvironmentVariablesNodeProperty();
         EnvVars envVars = prop.getEnvVars();
-        envVars.put("PREFIX", "1.1.0");
+        envVars.put("PREFIX", "1.1");
         j.jenkins.getGlobalNodeProperties().add(prop);
         FreeStyleProject project = j.createFreeStyleProject();
         project.getBuildersList().add(new TestBuilder() {
+            @Override
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                     BuildListener listener) throws InterruptedException, IOException {
                 build.getWorkspace().child("AssemblyVersion.cs").write("using System.Reflection;\n" +
@@ -72,13 +71,15 @@ public class ReplacementsTest {
                 return true;
             }
         });
-        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "AssemblyVersion.cs", "", "", "MyTitle", "MyDescription", "MyCompany", "MyProduct", "MyCopyright", "MyTrademark", "MyCulture");
+        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "$PREFIX.${BUILD_NUMBER}", "$PREFIX.${BUILD_NUMBER}.0", "AssemblyVersion.cs", "MyTitle", "MyDescription", "MyCompany", "MyProduct", "MyCopyright", "MyTrademark", "MyCulture");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
         //String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child("AssemblyVersion.cs").readToString();
-        assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
+        assertTrue(content.contains("AssemblyVersion(\"1.1.${BUILD_NUMBER}"));
+        assertTrue(content.contains("AssemblyFileVersion(\"1.1.${BUILD_NUMBER}"));
+        assertTrue(content.contains("AssemblyInformationalVersion(\"1.1.${BUILD_NUMBER}.0"));
         
         // Check that we update additional assembly info
         assertTrue(content.contains("AssemblyTitle(\"MyTitle"));
@@ -89,7 +90,7 @@ public class ReplacementsTest {
         assertTrue(content.contains("AssemblyTrademark(\"MyTrademark"));
         assertTrue(content.contains("AssemblyCulture(\"MyCulture"));
         
-        assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
+        assertTrue(builder.getAssemblyVersion().equals("$PREFIX.${BUILD_NUMBER}"));
     }
     
     @Test
@@ -106,6 +107,7 @@ public class ReplacementsTest {
 "\n" +
 "[assembly: AssemblyVersion(\"13.1.1.976\")]";
         project.getBuildersList().add(new TestBuilder() {
+            @Override
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                     BuildListener listener) throws InterruptedException, IOException {
                 build.getWorkspace().child(f1).write(c, "UTF-8");
@@ -119,9 +121,9 @@ public class ReplacementsTest {
 
         //String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child(f1).readToString();
-        assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
+        assertTrue(content,content.contains("AssemblyVersion(\"1.1.0.${BUILD_NUMBER}"));
         content = build.getWorkspace().child(f2).readToString();
-        assertTrue(content.contains("AssemblyVersion(\"13.1.1.976"));
-        assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
+        assertTrue(content,content.contains("AssemblyVersion(\"13.1.1.976"));
+        assertTrue(builder.getAssemblyVersion().equals("$PREFIX.${BUILD_NUMBER}"));
     }
 }
