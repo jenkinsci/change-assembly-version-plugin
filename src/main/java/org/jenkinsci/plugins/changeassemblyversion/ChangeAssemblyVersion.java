@@ -123,11 +123,9 @@ public class ChangeAssemblyVersion extends Builder {
             String assemblyGlob = this.assemblyFile == null || this.assemblyFile.equals("") ? "**/AssemblyInfo.cs" : this.assemblyFile;
 
             EnvVars envVars = build.getEnvironment(listener);
-            String version = new AssemblyVersion(this.versionPattern, envVars).getVersion();
-            if (versionPattern == null || StringUtils.isEmpty(versionPattern))
-            {
-                listener.getLogger().println("Please provide a valid version pattern.");
-                return false;
+            String version = "";
+            if (versionPattern != null && !StringUtils.isEmpty(versionPattern)) {
+                version = new AssemblyVersion(this.versionPattern, envVars).getVersion();
             }
             
             // Expand env variables
