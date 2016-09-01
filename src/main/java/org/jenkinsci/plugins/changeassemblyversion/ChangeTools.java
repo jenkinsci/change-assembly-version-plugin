@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.changeassemblyversion;
 import hudson.FilePath;
 import hudson.model.BuildListener;
 
+import java.io.OutputStream;
 import java.io.IOException;
 
 public class ChangeTools {
@@ -33,7 +34,12 @@ public class ChangeTools {
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
             content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
-            file.write(content, null);
+            OutputStream os = file.write();
+            try {
+                os.write(content.getBytes());
+            } finally {
+                os.close();
+            }
         }
         else
         {
