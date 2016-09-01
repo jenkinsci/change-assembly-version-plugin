@@ -2,6 +2,9 @@
 	<f:entry title="${%Assembly Version}" field="versionPattern">
         <f:textbox/>
 	</f:entry>
+	<f:entry title="${%Assembly Informational Version}" field="assemblyInformationalVersion">
+        <f:textbox/>
+	</f:entry>
 	<f:entry title="${%Assembly Title}" field="assemblyTitle">
         <f:textbox/>
 	</f:entry>

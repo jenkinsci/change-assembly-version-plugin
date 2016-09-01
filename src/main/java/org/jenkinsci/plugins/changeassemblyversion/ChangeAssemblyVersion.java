@@ -24,6 +24,7 @@ public class ChangeAssemblyVersion extends Builder {
     private final String assemblyFile;
     private final String regexPattern;
     private final String replacementPattern;
+    private final String assemblyInformationalVersion;
     private final String assemblyTitle;
     private final String assemblyDescription;
     private final String assemblyCompany;
@@ -37,6 +38,7 @@ public class ChangeAssemblyVersion extends Builder {
         String assemblyFile, 
         String regexPattern, 
         String replacementPattern, 
+        String assemblyInformationalVersion,
         String assemblyTitle,
         String assemblyDescription,
         String assemblyCompany,
@@ -49,6 +51,7 @@ public class ChangeAssemblyVersion extends Builder {
         this.assemblyFile = assemblyFile;
         this.regexPattern = regexPattern;
         this.replacementPattern = replacementPattern;
+        this.assemblyInformationalVersion = assemblyInformationalVersion;
         this.assemblyTitle = assemblyTitle;
         this.assemblyDescription = assemblyDescription;
         this.assemblyCompany = assemblyCompany;
@@ -76,6 +79,10 @@ public class ChangeAssemblyVersion extends Builder {
     
     public String getAssemblyTitle() {
         return this.assemblyTitle;
+    }
+    
+    public String getAssemblyInformationalVersion() {
+        return this.assemblyInformationalVersion;
     }
     
     public String getAssemblyDescription() {
@@ -131,6 +138,7 @@ public class ChangeAssemblyVersion extends Builder {
             }
             
             // Expand env variables
+            String assemblyInformationalVersion = envVars.expand(this.assemblyInformationalVersion);
             String assemblyTitle = envVars.expand(this.assemblyTitle);
             String assemblyDescription = envVars.expand(this.assemblyDescription);
             String assemblyCompany = envVars.expand(this.assemblyCompany);
@@ -143,6 +151,7 @@ public class ChangeAssemblyVersion extends Builder {
             // Log new expanded values
             listener.getLogger().println(String.format("Changing File(s): %s", assemblyGlob));
             listener.getLogger().println(String.format("Assembly Version : %s",  version));
+            listener.getLogger().println(String.format("Assembly Informational Version : %s",  assemblyInformationalVersion));
             listener.getLogger().println(String.format("Assembly Title : %s",  assemblyTitle));
             listener.getLogger().println(String.format("Assembly Description : %s",  assemblyDescription));
             listener.getLogger().println(String.format("Assembly Company : %s",  assemblyCompany));
@@ -158,6 +167,7 @@ public class ChangeAssemblyVersion extends Builder {
                 
                 // Set new things, empty string being ok for them.
                 // TODO: Would we need a regex for these or just blast as we are doing now?
+                new ChangeTools(f, "AssemblyInformationalVersion[(]\".*\"[)]", "AssemblyInformationalVersion(\"%s\")").Replace(assemblyInformationalVersion, listener);
                 new ChangeTools(f, "AssemblyTitle[(]\".*\"[)]", "AssemblyTitle(\"%s\")").Replace(assemblyTitle, listener);            
                 new ChangeTools(f, "AssemblyDescription[(]\".*\"[)]", "AssemblyDescription(\"%s\")").Replace(assemblyDescription, listener);
                 new ChangeTools(f, "AssemblyCompany[(]\".*\"[)]", "AssemblyCompany(\"%s\")").Replace(assemblyCompany, listener);
