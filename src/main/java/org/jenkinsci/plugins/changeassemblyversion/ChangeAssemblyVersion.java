@@ -87,7 +87,7 @@ public class ChangeAssemblyVersion extends Builder {
         this.assemblyInfoVersionString = String.format(BasePattern, "AssemblyInformationalVersion(\"%s\")");
         this.assemblyVersionString = String.format(BasePattern, "AssemblyVersion(\"%s\")");
 
-        this.BASE_REGEX = "\\[\\s*assembly:\\s*%s\\s*\\(\\s*\\\".*\\\"\\s*\\)\\s*\\]"; //ok
+        this.BASE_REGEX = "\\[\\s*?assembly:\\s*?%s\\s*?\\(\\s*?\\\".*?\\\"\\s*?\\)\\s*?\\]";
         this.assemblyCultureRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCulture"));
         this.assemblyTrademarkRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyTrademark"));
         this.assemblyCopyrightRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCopyright"));
