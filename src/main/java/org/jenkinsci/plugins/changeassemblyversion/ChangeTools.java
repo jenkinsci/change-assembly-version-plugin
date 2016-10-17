@@ -16,7 +16,7 @@ public class ChangeTools {
         if (regexPattern != null && !regexPattern.equals("")) {
             this.regexPattern = regexPattern;
         } else {
-            this.regexPattern = "Version[(]\"[\\d\\.]+\"[)]";
+            this.regexPattern = "Version[(]\"[0-9\\*\\.]+\"[)]";
         }
 
         if (replacementPattern != null && !replacementPattern.equals("")) {
