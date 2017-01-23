@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <div>
   This plugin lets the user modify the AssemblyVersion and AssemblyFileVersion attributes, typically contained in the AssemblyInfo.cs file.
 </div>
