@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
+import org.apache.commons.io.input.BOMInputStream;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -22,6 +23,18 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class ChangeAssemblyVersion extends Builder {
 
+    private final String assemblyCultureReplacementString;
+    private final String assemblyTrademarkReplacementString;
+    private final String assemblyCopyrightReplacementString;
+    private final String assemblyProductReplacmentString;
+    private final String assemblyCompanyReplacementString;
+    private final String assemblyDescriptionReplacementString;
+    private final String assemblyTitleReplacmentString;
+    private final String assemblyFileVersionReplacementString;
+    private final String assemblyInfoVersionReplacementString;
+    private final String assemblyVersionReplacementString;
+
+    /*
     private final String assemblyCultureString;
     private final String assemblyTrademarkString;
     private final String assemblyCopyrightString;
@@ -31,8 +44,7 @@ public class ChangeAssemblyVersion extends Builder {
     private final String assemblyTitleString;
     private final String assemblyFileVersionString;
     private final String assemblyInfoVersionString;
-    private final String assemblyVersionString;
-
+    private final String assemblyVersionString; */
     private final String BASE_REGEX;
 
     private final String BasePattern;
@@ -75,21 +87,33 @@ public class ChangeAssemblyVersion extends Builder {
             String assemblyTrademark,
             String assemblyCulture
     ) {
+        /*
+        this.assemblyCultureString = "AssemblyCulture";
+        this.assemblyTrademarkString = "AssemblyTrademark";
+        this.assemblyCopyrightString = "AssemblyCopyright";
+        this.assemblyProductString = "AssemblyProduct";
+        this.assemblyCompanyString = "AssemblyCompany";
+        this.assemblyDescriptionString = "AssemblyDescription";
+        this.assemblyTitleString = "AssemblyTitle";
+        this.assemblyFileVersionString = "AssemblyFileVersion";
+        this.assemblyInfoVersionString = "AssemblyInformationalVersion";
+        this.assemblyVersionString = "AssemblyVersion"; */
+
         this.BasePattern = "[assembly: %s]";
-        this.assemblyCultureString = String.format(BasePattern, "AssemblyCulture(\"%s\")");
-        this.assemblyTrademarkString = String.format(BasePattern, "AssemblyTrademark(\"%s\")");
-        this.assemblyCopyrightString = String.format(BasePattern, "AssemblyCopyright(\"%s\")");
-        this.assemblyProductString = String.format(BasePattern, "AssemblyProduct(\"%s\")");
-        this.assemblyCompanyString = String.format(BasePattern, "AssemblyCompany(\"%s\")");
-        this.assemblyDescriptionString = String.format(BasePattern, "AssemblyDescription(\"%s\")");
-        this.assemblyTitleString = String.format(BasePattern, "AssemblyTitle(\"%s\")");
-        this.assemblyFileVersionString = String.format(BasePattern, "AssemblyFileVersion(\"%s\")");
-        this.assemblyInfoVersionString = String.format(BasePattern, "AssemblyInformationalVersion(\"%s\")");
-        this.assemblyVersionString = String.format(BasePattern, "AssemblyVersion(\"%s\")");
+        this.assemblyCultureReplacementString = String.format(BasePattern, "AssemblyCulture(\"%s\")");
+        this.assemblyTrademarkReplacementString = String.format(BasePattern, "AssemblyTrademark(\"%s\")");
+        this.assemblyCopyrightReplacementString = String.format(BasePattern, "AssemblyCopyright(\"%s\")");
+        this.assemblyProductReplacmentString = String.format(BasePattern, "AssemblyProduct(\"%s\")");
+        this.assemblyCompanyReplacementString = String.format(BasePattern, "AssemblyCompany(\"%s\")");
+        this.assemblyDescriptionReplacementString = String.format(BasePattern, "AssemblyDescription(\"%s\")");
+        this.assemblyTitleReplacmentString = String.format(BasePattern, "AssemblyTitle(\"%s\")");
+        this.assemblyFileVersionReplacementString = String.format(BasePattern, "AssemblyFileVersion(\"%s\")");
+        this.assemblyInfoVersionReplacementString = String.format(BasePattern, "AssemblyInformationalVersion(\"%s\")");
+        this.assemblyVersionReplacementString = String.format(BasePattern, "AssemblyVersion(\"%s\")");
 
         //this.BASE_REGEX = "\\[\\s*?assembly:\\s*?%s\\s*?\\(\\s*?\\\".*?\\\"\\s*?\\)\\s*?\\]";
         this.BASE_REGEX = "(?m)((?:\\G|^)[^\\[/\\n]*+(?:\\[(?!assembly:\\s*?%1$s\\s*?\\(\\s*?\\\".*?\\\"\\s*?\\)\\s*?\\])[^\\[/\\n]*|/(?!/)[^\\[/\\n]*)*+)\\[assembly:\\s*?%1$s\\s*?\\(\\s*?\\\".*?\\\"\\s*?\\)\\s*?\\]";
-        
+
         this.assemblyCultureRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCulture"));
         this.assemblyTrademarkRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyTrademark"));
         this.assemblyCopyrightRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCopyright"));
@@ -114,15 +138,15 @@ public class ChangeAssemblyVersion extends Builder {
         this.assemblyTrademark = assemblyTrademark;
         this.assemblyCulture = assemblyCulture;
     }
-    
+
     public String getAssemblyVersion() {
         return this.assemblyVersion;
     }
-    
+
     public String getAssemblyFileVersion() {
         return this.assemblyFileVersion;
     }
-    
+
     public String getAssemblyInformationalVersion() {
         return this.assemblyInformationalVersion;
     }
@@ -182,7 +206,7 @@ public class ChangeAssemblyVersion extends Builder {
             // Expand env variables and token macros
             String expandedAssemblyVersion = TokenMacro.expandAll(build, listener, this.assemblyVersion);
             String expandedAssemblyFileVersion = TokenMacro.expandAll(build, listener, this.assemblyFileVersion);
-            String expandedAssemblyInformationalVersion = TokenMacro.expandAll(build, listener, this.assemblyInformationalVersion);
+            String expandedAssemblyInfoVersion = TokenMacro.expandAll(build, listener, this.assemblyInformationalVersion);
             String expandedAssemblyTitle = TokenMacro.expandAll(build, listener, this.assemblyTitle);
             String expandedAssemblyDescription = TokenMacro.expandAll(build, listener, this.assemblyDescription);
             String expandedAssemblyCompany = TokenMacro.expandAll(build, listener, this.assemblyCompany);
@@ -195,7 +219,7 @@ public class ChangeAssemblyVersion extends Builder {
             listener.getLogger().println(String.format("Changing File(s): %s", assemblyGlob));
             listener.getLogger().println(String.format("Assembly Version : %s", expandedAssemblyVersion));
             listener.getLogger().println(String.format("Assembly File Version : %s", expandedAssemblyFileVersion));
-            listener.getLogger().println(String.format("Assembly Informational Version : %s", expandedAssemblyInformationalVersion));
+            listener.getLogger().println(String.format("Assembly Informational Version : %s", expandedAssemblyInfoVersion));
             listener.getLogger().println(String.format("Assembly Title : %s", expandedAssemblyTitle));
             listener.getLogger().println(String.format("Assembly Description : %s", expandedAssemblyDescription));
             listener.getLogger().println(String.format("Assembly Company : %s", expandedAssemblyCompany));
@@ -209,19 +233,20 @@ public class ChangeAssemblyVersion extends Builder {
                 throw new AbortException("Unable to retrieve workspace");
             } else {
                 for (FilePath f : workspace.list(assemblyGlob)) {
-                    ChangeTools.replaceOrAppend(f, assemblyVersionRegex, expandedAssemblyVersion, assemblyVersionString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyFileVersionRegex, expandedAssemblyFileVersion, assemblyFileVersionString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyInfoVersionRegex, expandedAssemblyInformationalVersion, assemblyInfoVersionString, listener);
-
-                    // Set new things, empty string being ok for them.
-                    // TODO: Would we need a regex for these or just blast as we are doing now?
-                    ChangeTools.replaceOrAppend(f, assemblyTitleRegex, expandedAssemblyTitle, assemblyTitleString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyDescriptionRegex, expandedAssemblyDescription, assemblyDescriptionString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyCompanyRegex, expandedAssemblyCompany, assemblyCompanyString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyProductRegex, expandedAssemblyProduct, assemblyProductString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyCopyrightRegex, expandedAssemblyCopyright, assemblyCopyrightString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyTrademarkRegex, expandedAssemblyTrademark, assemblyTrademarkString, listener);
-                    ChangeTools.replaceOrAppend(f, assemblyCultureRegex, expandedAssemblyCulture, assemblyCultureString, listener);
+                    listener.getLogger().println(String.format("Updating file : %s", f.getRemote()));
+                    BOMInputStream bs = new BOMInputStream(f.read());        //removes BOM
+                    String content = org.apache.commons.io.IOUtils.toString(bs);
+                    content = ChangeTools.replaceOrAppend(content, assemblyVersionRegex, expandedAssemblyVersion, assemblyVersionReplacementString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyFileVersionRegex, expandedAssemblyFileVersion, assemblyFileVersionReplacementString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyInfoVersionRegex, expandedAssemblyInfoVersion, assemblyInfoVersionReplacementString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyTitleRegex, expandedAssemblyTitle, assemblyTitleReplacmentString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyDescriptionRegex, expandedAssemblyDescription, assemblyDescriptionReplacementString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyCompanyRegex, expandedAssemblyCompany, assemblyCompanyReplacementString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyProductRegex, expandedAssemblyProduct, assemblyProductReplacmentString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyCopyrightRegex, expandedAssemblyCopyright, assemblyCopyrightReplacementString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyTrademarkRegex, expandedAssemblyTrademark, assemblyTrademarkReplacementString, listener);
+                    content = ChangeTools.replaceOrAppend(content, assemblyCultureRegex, expandedAssemblyCulture, assemblyCultureReplacementString, listener);
+                    f.write(content, null);
                 }
             }
         } catch (IOException | InterruptedException | MacroEvaluationException ex) {
