@@ -111,7 +111,7 @@ public class ChangeAssemblyVersion extends Builder {
         this.assemblyInfoVersionReplacementString = String.format(BasePattern, "AssemblyInformationalVersion(\"%s\")");
         this.assemblyVersionReplacementString = String.format(BasePattern, "AssemblyVersion(\"%s\")");
 
-        //this.BASE_REGEX = "\\[\\s*?assembly:\\s*?%s\\s*?\\(\\s*?\\\".*?\\\"\\s*?\\)\\s*?\\]";
+        //http://stackoverflow.com/questions/39257137/java-regex-to-filter-lines-with-comment-not-working-as-expected
         this.BASE_REGEX = "(?m)((?:\\G|^)[^\\[/\\n]*+(?:\\[(?!assembly:\\s*?%1$s\\s*?\\(\\s*?\\\".*?\\\"\\s*?\\)\\s*?\\])[^\\[/\\n]*|/(?!/)[^\\[/\\n]*)*+)\\[assembly:\\s*?%1$s\\s*?\\(\\s*?\\\".*?\\\"\\s*?\\)\\s*?\\]";
 
         this.assemblyCultureRegex = Pattern.compile(String.format(BASE_REGEX, "AssemblyCulture"));
