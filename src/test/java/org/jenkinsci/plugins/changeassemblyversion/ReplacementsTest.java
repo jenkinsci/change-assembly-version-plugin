@@ -48,6 +48,7 @@ public class ReplacementsTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
+    @SuppressWarnings("null")
     @Test
     public void testResolveEnvironmentVariables() throws InterruptedException, IOException, Exception {
 
@@ -57,6 +58,7 @@ public class ReplacementsTest {
         j.jenkins.getGlobalNodeProperties().add(prop);
         FreeStyleProject project = j.createFreeStyleProject();
         project.getBuildersList().add(new TestBuilder() {
+            @Override
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                     BuildListener listener) throws InterruptedException, IOException {
                 build.getWorkspace().child("AssemblyVersion.cs").write("using System.Reflection;\n" +
@@ -92,6 +94,7 @@ public class ReplacementsTest {
         assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
     }
     
+    @SuppressWarnings("null")
     @Test
     public void testResolveEnvironmentVariables_recursively_excludingSvn() throws InterruptedException, IOException, Exception {
 
@@ -106,6 +109,7 @@ public class ReplacementsTest {
 "\n" +
 "[assembly: AssemblyVersion(\"13.1.1.976\")]";
         project.getBuildersList().add(new TestBuilder() {
+            @Override
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                     BuildListener listener) throws InterruptedException, IOException {
                 build.getWorkspace().child(f1).write(c, "UTF-8");

@@ -1,7 +1,5 @@
 package org.jenkinsci.plugins.changeassemblyversion;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -101,7 +99,6 @@ public class ChangeAssemblyVersion extends Builder {
     public String getAssemblyCulture() {
         return this.assemblyCulture;
     }
-    
     /**
      *
      * The perform method is gonna search all the file named "Assemblyinfo.cs"
@@ -117,6 +114,7 @@ public class ChangeAssemblyVersion extends Builder {
      *
      *
      */
+    @SuppressWarnings("null")
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         try {
@@ -129,47 +127,33 @@ public class ChangeAssemblyVersion extends Builder {
                 listener.getLogger().println("Please provide a valid version pattern.");
                 return false;
             }
-            
-            // Expand env variables
-            String assemblyTitle = envVars.expand(this.assemblyTitle);
-            String assemblyDescription = envVars.expand(this.assemblyDescription);
-            String assemblyCompany = envVars.expand(this.assemblyCompany);
-            String assemblyProduct = envVars.expand(this.assemblyProduct);
-            String assemblyCopyright = envVars.expand(this.assemblyCopyright);
-            String assemblyTrademark = envVars.expand(this.assemblyTrademark);
-            String assemblyCulture = envVars.expand(this.assemblyCulture);
-            
-            
+
             // Log new expanded values
             listener.getLogger().println(String.format("Changing File(s): %s", assemblyGlob));
             listener.getLogger().println(String.format("Assembly Version : %s",  version));
-            listener.getLogger().println(String.format("Assembly Title : %s",  assemblyTitle));
-            listener.getLogger().println(String.format("Assembly Description : %s",  assemblyDescription));
-            listener.getLogger().println(String.format("Assembly Company : %s",  assemblyCompany));
-            listener.getLogger().println(String.format("Assembly Product : %s",  assemblyProduct));
-            listener.getLogger().println(String.format("Assembly Copyright : %s",  assemblyCopyright));
-            listener.getLogger().println(String.format("Assembly Trademark : %s",  assemblyTrademark));
-            listener.getLogger().println(String.format("Assembly Culture : %s",  assemblyCulture));
+            listener.getLogger().println(String.format("Assembly Title : %s",  envVars.expand(this.assemblyTitle)));
+            listener.getLogger().println(String.format("Assembly Description : %s",  envVars.expand(this.assemblyDescription)));
+            listener.getLogger().println(String.format("Assembly Company : %s",  envVars.expand(this.assemblyCompany)));
+            listener.getLogger().println(String.format("Assembly Product : %s",  envVars.expand(this.assemblyProduct)));
+            listener.getLogger().println(String.format("Assembly Copyright : %s",  envVars.expand(this.assemblyCopyright)));
+            listener.getLogger().println(String.format("Assembly Trademark : %s",  envVars.expand(this.assemblyTrademark)));
+            listener.getLogger().println(String.format("Assembly Culture : %s",  envVars.expand(this.assemblyCulture)));
             
             for (FilePath f : build.getWorkspace().list(assemblyGlob))
             {
                 // Update the AssemblyVerion and AssemblyFileVersion
-                new ChangeTools(f, this.regexPattern, this.replacementPattern).Replace(version, listener);
-                
+                new ChangeTools(f, this.regexPattern, this.replacementPattern).replace(version, listener);                
                 // Set new things, empty string being ok for them.
-                // TODO: Would we need a regex for these or just blast as we are doing now?
-                new ChangeTools(f, "AssemblyTitle[(]\".*\"[)]", "AssemblyTitle(\"%s\")").Replace(assemblyTitle, listener);            
-                new ChangeTools(f, "AssemblyDescription[(]\".*\"[)]", "AssemblyDescription(\"%s\")").Replace(assemblyDescription, listener);
-                new ChangeTools(f, "AssemblyCompany[(]\".*\"[)]", "AssemblyCompany(\"%s\")").Replace(assemblyCompany, listener);
-                new ChangeTools(f, "AssemblyProduct[(]\".*\"[)]", "AssemblyProduct(\"%s\")").Replace(assemblyProduct, listener);
-                new ChangeTools(f, "AssemblyCopyright[(]\".*\"[)]", "AssemblyCopyright(\"%s\")").Replace(assemblyCopyright, listener);
-                new ChangeTools(f, "AssemblyTrademark[(]\".*\"[)]", "AssemblyTrademark(\"%s\")").Replace(assemblyTrademark, listener);
-                new ChangeTools(f, "AssemblyCulture[(]\".*\"[)]", "AssemblyCulture(\"%s\")").Replace(assemblyCulture, listener);
+                new ChangeTools(f, "AssemblyTitle[(]\".*\"[)]", "AssemblyTitle(\"%s\")").replace(envVars.expand(this.assemblyTitle), listener);            
+                new ChangeTools(f, "AssemblyDescription[(]\".*\"[)]", "AssemblyDescription(\"%s\")").replace(envVars.expand(this.assemblyDescription), listener);
+                new ChangeTools(f, "AssemblyCompany[(]\".*\"[)]", "AssemblyCompany(\"%s\")").replace(envVars.expand(this.assemblyCompany), listener);
+                new ChangeTools(f, "AssemblyProduct[(]\".*\"[)]", "AssemblyProduct(\"%s\")").replace(envVars.expand(this.assemblyProduct), listener);
+                new ChangeTools(f, "AssemblyCopyright[(]\".*\"[)]", "AssemblyCopyright(\"%s\")").replace(envVars.expand(this.assemblyCopyright), listener);
+                new ChangeTools(f, "AssemblyTrademark[(]\".*\"[)]", "AssemblyTrademark(\"%s\")").replace(envVars.expand(this.assemblyTrademark), listener);
+                new ChangeTools(f, "AssemblyCulture[(]\".*\"[)]", "AssemblyCulture(\"%s\")").replace(envVars.expand(this.assemblyCulture), listener);
             }
         } catch (Exception ex) {
-            StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
-            listener.getLogger().println(sw.toString());
+            ex.printStackTrace(listener.getLogger());
             return false;
         }
         return true;
@@ -188,5 +172,4 @@ public class ChangeAssemblyVersion extends Builder {
             return "Change Assembly Version";
         }
     }
-
 }
