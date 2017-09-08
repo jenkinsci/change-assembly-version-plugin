@@ -1,35 +1,36 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-	<f:entry title="${%Assembly Version}" field="versionPattern">
+    <f:entry title="${%Assembly Version}" field="assemblyVersion">
         <f:textbox/>
-	</f:entry>
-	<f:entry title="${%Assembly Title}" field="assemblyTitle">
+    </f:entry>
+    <f:entry title="${%Assembly File Version}" field="assemblyFileVersion">
         <f:textbox/>
-	</f:entry>
-	<f:entry title="${%Assembly Description}" field="assemblyDescription">
+    </f:entry>
+    <f:entry title="${%Assembly Informational Version}" field="assemblyInformationalVersion">
         <f:textbox/>
-	</f:entry>
-	<f:entry title="${%Assembly Company}" field="assemblyCompany">
+    </f:entry>
+    <f:entry title="${%Assembly Title}" field="assemblyTitle">
         <f:textbox/>
-	</f:entry>
-	<f:entry title="${%Assembly Product}" field="assemblyProduct">
+    </f:entry>
+    <f:entry title="${%Assembly Description}" field="assemblyDescription">
         <f:textbox/>
-	</f:entry>
-	<f:entry title="${%Assembly Copyright}" field="assemblyCopyright">
+    </f:entry>
+    <f:entry title="${%Assembly Company}" field="assemblyCompany">
         <f:textbox/>
-	</f:entry>
-	<f:entry title="${%Assembly Trademark}" field="assemblyTrademark">
+    </f:entry>
+    <f:entry title="${%Assembly Product}" field="assemblyProduct">
         <f:textbox/>
-	</f:entry>
-	<f:entry title="${%Assembly Culture}" field="assemblyCulture">
+    </f:entry>
+    <f:entry title="${%Assembly Copyright}" field="assemblyCopyright">
         <f:textbox/>
-	</f:entry>	
-	<f:entry title="${%FileName}" field="assemblyFile">
-		<f:textbox/>
-	</f:entry>
-	<f:entry title="${%RegexPattern}" field="regexPattern">
-		<f:textbox/>
-	</f:entry>  
-	<f:entry title="${%ReplacementPattern}" field="replacementPattern">
-		<f:textbox/>
-	</f:entry>
+    </f:entry>
+    <f:entry title="${%Assembly Trademark}" field="assemblyTrademark">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%Assembly Culture}" field="assemblyCulture">
+        <f:textbox/>
+    </f:entry>	
+    <f:entry title="${%FileName}" field="assemblyFile">
+        <f:textbox/>
+    </f:entry>
 </j:jelly>

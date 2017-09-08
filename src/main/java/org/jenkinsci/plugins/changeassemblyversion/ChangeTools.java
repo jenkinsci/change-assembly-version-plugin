@@ -1,43 +1,32 @@
 package org.jenkinsci.plugins.changeassemblyversion;
 
-import hudson.FilePath;
 import hudson.model.BuildListener;
-
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChangeTools {
 
-    private final FilePath file;
-    private final String regexPattern;
-    private final String replacementPattern;
-
-    ChangeTools(FilePath f, String regexPattern, String replacementPattern) {
-        this.file = f;
-        if (regexPattern != null && !regexPattern.equals("")) {
-            this.regexPattern = regexPattern;
-        } else {
-            this.regexPattern = "Version[(]\"[\\d\\.]+\"[)]";
-        }
-
-        if (replacementPattern != null && !replacementPattern.equals("")) {
-            this.replacementPattern = replacementPattern;
-        } else {
-            this.replacementPattern = "Version(\"%s\")";
-        }
+    ChangeTools() {
     }
 
-    public void Replace(String replacement, BuildListener listener) throws IOException, InterruptedException {
-        if (replacement != null && !replacement.isEmpty())
-        {
-            String content = file.readToString();  // needs to use read() instead!
-            listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
-            content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
-            //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
-            file.write(content, null);
+    public static String replaceOrAppend(String content, Pattern regexPattern, String replacement, String replacementPattern, BuildListener listener) throws IOException, InterruptedException {
+        if (replacement != null && !replacement.isEmpty()) {
+            //listener.getLogger().println(String.format("\t Replacement : %s", replacement));
+            //String newContent = content.replaceAll(regexPattern.toString(), String.format(replacementPattern, replacement));
+            //regexPattern.matcher(content).region(0, 0);
+            Matcher m=regexPattern.matcher(content);
+            content = m.replaceFirst(String.format(replacementPattern, replacement));
+            //listener.getLogger().println(String.format("regex= %s",regexPattern.matcher(content).pattern()));
+            try {
+                m.group(); //throws illegalstate if no match was perfomred
+            } catch (IllegalStateException ex) {
+                listener.getLogger().println("Addidng missing value");
+                content += System.lineSeparator() + String.format(replacementPattern, replacement);
+            }
+        } else {
+            listener.getLogger().println(String.format("Skipping replacement because replacemnt value is empty."));
         }
-        else
-        {
-            listener.getLogger().println(String.format("Skipping replacement because value is empty."));
-        }
+        return content;
     }
 }
