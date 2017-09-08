@@ -9,10 +9,12 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
+import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
@@ -234,8 +236,13 @@ public class ChangeAssemblyVersion extends Builder {
             } else {
                 for (FilePath f : workspace.list(assemblyGlob)) {
                     listener.getLogger().println(String.format("Updating file : %s", f.getRemote()));
-                    BOMInputStream bs = new BOMInputStream(f.read());        //removes BOM
-                    String content = org.apache.commons.io.IOUtils.toString(bs);
+                    ByteOrderMark bom;
+                    String content;
+                    try (InputStream is = f.read()) {
+                        BOMInputStream bs = new BOMInputStream(is); //removes BOM
+                        bom=bs.getBOM();    //save the BOM to resinsert later
+                        content = org.apache.commons.io.IOUtils.toString(bs);
+                    }
                     content = ChangeTools.replaceOrAppend(content, assemblyVersionRegex, expandedAssemblyVersion, assemblyVersionReplacementString, listener);
                     content = ChangeTools.replaceOrAppend(content, assemblyFileVersionRegex, expandedAssemblyFileVersion, assemblyFileVersionReplacementString, listener);
                     content = ChangeTools.replaceOrAppend(content, assemblyInfoVersionRegex, expandedAssemblyInfoVersion, assemblyInfoVersionReplacementString, listener);
