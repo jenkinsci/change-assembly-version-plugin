@@ -237,10 +237,12 @@ public class ChangeAssemblyVersion extends Builder {
                 for (FilePath f : workspace.list(assemblyGlob)) {
                     listener.getLogger().println(String.format("Updating file : %s", f.getRemote()));
                     ByteOrderMark bom;
+                    String charset;
                     String content;
                     try (InputStream is = f.read()) {
                         BOMInputStream bs = new BOMInputStream(is); //removes BOM
                         bom=bs.getBOM();    //save the BOM to resinsert later
+                        charset=bs.getBOMCharsetName();
                         content = org.apache.commons.io.IOUtils.toString(bs);
                     }
                     content = ChangeTools.replaceOrAppend(content, assemblyVersionRegex, expandedAssemblyVersion, assemblyVersionReplacementString, listener);
@@ -253,7 +255,7 @@ public class ChangeAssemblyVersion extends Builder {
                     content = ChangeTools.replaceOrAppend(content, assemblyCopyrightRegex, expandedAssemblyCopyright, assemblyCopyrightReplacementString, listener);
                     content = ChangeTools.replaceOrAppend(content, assemblyTrademarkRegex, expandedAssemblyTrademark, assemblyTrademarkReplacementString, listener);
                     content = ChangeTools.replaceOrAppend(content, assemblyCultureRegex, expandedAssemblyCulture, assemblyCultureReplacementString, listener);
-                    f.write(content, null);
+                    f.write(content, charset);
                 }
             }
         } catch (IOException | InterruptedException | MacroEvaluationException ex) {
