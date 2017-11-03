@@ -1,7 +1,10 @@
 package org.jenkinsci.plugins.changeassemblyversion;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -9,30 +12,35 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import jenkins.tasks.SimpleBuildStep;
+
 import org.apache.commons.lang.StringUtils;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 /**
  * @author <a href="mailto:leonardo.kobus@hbsis.com.br">Leonardo Kobus</a>
  */
-public class ChangeAssemblyVersion extends Builder {
+public class ChangeAssemblyVersion extends Builder implements SimpleBuildStep {
 
     private final String versionPattern;
-    private final String assemblyFile;
-    private final String regexPattern;
-    private final String replacementPattern;
-    private final String assemblyTitle;
-    private final String assemblyDescription;
-    private final String assemblyCompany;
-    private final String assemblyProduct;
-    private final String assemblyCopyright;
-    private final String assemblyTrademark;
-    private final String assemblyCulture;
+    private String assemblyFile;
+    private String regexPattern;
+    private String replacementPattern;
+    private String assemblyTitle;
+    private String assemblyDescription;
+    private String assemblyCompany;
+    private String assemblyProduct;
+    private String assemblyCopyright;
+    private String assemblyTrademark;
+    private String assemblyCulture;
 
-    @DataBoundConstructor
+    @Deprecated
     public ChangeAssemblyVersion(String versionPattern, 
         String assemblyFile, 
         String regexPattern, 
@@ -57,6 +65,62 @@ public class ChangeAssemblyVersion extends Builder {
         this.assemblyTrademark = assemblyTrademark;
         this.assemblyCulture = assemblyCulture;
     }
+    
+    @DataBoundConstructor
+    public ChangeAssemblyVersion(String versionPattern) {
+        this.versionPattern = versionPattern;
+    }
+
+    @DataBoundSetter
+    public void setAssemblyFile(String file) {
+        this.assemblyFile = file;
+    }
+
+    @DataBoundSetter
+    public void setRegexPattern(String regexPattern) {
+        this.regexPattern = regexPattern;
+    }
+
+    @DataBoundSetter
+    public void setReplacementPattern(String pattern) {
+        this.replacementPattern = pattern;
+    }
+    
+    @DataBoundSetter
+    public void setAssemblyTitle(String title) {
+        this.assemblyTitle = title;
+    }
+    
+    @DataBoundSetter
+    public void setAssemblyDescription(String description) {
+        this.assemblyDescription = description;
+    }
+    
+    @DataBoundSetter
+    public void setAssemblyCompany(String company) {
+        this.assemblyCompany = company;
+    }
+    
+    @DataBoundSetter
+    public void setAssemblyProduct(String product) {
+        this.assemblyProduct = product;
+    }            
+
+    @DataBoundSetter
+    public void setAssemblyCopyright(String copyright) {
+        this.assemblyCopyright = copyright;
+    }
+
+    @DataBoundSetter
+    public void setAssemblyTrademark(String trademark) {
+        this.assemblyTrademark = trademark;
+    }
+    
+    @DataBoundSetter
+    public void setAssemblyCulture(String culture) {
+        this.assemblyCulture = culture;
+    }
+    
 
     public String getVersionPattern() {
         return this.versionPattern;
@@ -118,16 +182,23 @@ public class ChangeAssemblyVersion extends Builder {
      *
      */
     @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+    public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
+            throws InterruptedException, IOException {
+        
         try {
             String assemblyGlob = this.assemblyFile == null || this.assemblyFile.equals("") ? "**/AssemblyInfo.cs" : this.assemblyFile;
+            
+            EnvVars envVars = run.getEnvironment(listener);
 
-            EnvVars envVars = build.getEnvironment(listener);
+            if (run instanceof AbstractBuild) {
+                envVars.overrideAll(((AbstractBuild<?, ?>) run).getBuildVariables());
+            }
+
             String version = new AssemblyVersion(this.versionPattern, envVars).getVersion();
             if (versionPattern == null || StringUtils.isEmpty(versionPattern))
             {
                 listener.getLogger().println("Please provide a valid version pattern.");
-                return false;
+                throw new AbortException("Please provide a valid version pattern.");
             }
             
             // Expand env variables
@@ -151,7 +222,7 @@ public class ChangeAssemblyVersion extends Builder {
             listener.getLogger().println(String.format("Assembly Trademark : %s",  assemblyTrademark));
             listener.getLogger().println(String.format("Assembly Culture : %s",  assemblyCulture));
             
-            for (FilePath f : build.getWorkspace().list(assemblyGlob))
+            for (FilePath f : workspace.list(assemblyGlob))
             {
                 // Update the AssemblyVerion and AssemblyFileVersion
                 new ChangeTools(f, this.regexPattern, this.replacementPattern).Replace(version, listener);
@@ -170,13 +241,14 @@ public class ChangeAssemblyVersion extends Builder {
             StringWriter sw = new StringWriter();
             ex.printStackTrace(new PrintWriter(sw));
             listener.getLogger().println(sw.toString());
-            return false;
-        }
-        return true;
-    }
 
+            throw new AbortException(sw.toString());
+        }
+        
+    }
+    
     @Extension
-    public static class Descriptor extends BuildStepDescriptor<Builder> {
+    public static class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {

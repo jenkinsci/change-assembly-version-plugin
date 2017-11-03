@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.changeassemblyversion;
 
 import hudson.FilePath;
 import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 
 import java.io.IOException;
 
@@ -26,7 +27,7 @@ public class ChangeTools {
         }
     }
 
-    public void Replace(String replacement, BuildListener listener) throws IOException, InterruptedException {
+    public void Replace(String replacement, TaskListener listener) throws IOException, InterruptedException {
         if (replacement != null && !replacement.isEmpty())
         {
             String content = file.readToString();  // needs to use read() instead!
