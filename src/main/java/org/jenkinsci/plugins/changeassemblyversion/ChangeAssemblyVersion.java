@@ -165,6 +165,23 @@ public class ChangeAssemblyVersion extends Builder implements SimpleBuildStep {
     public String getAssemblyCulture() {
         return this.assemblyCulture;
     }
+
+    @Override
+    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) 
+        throws InterruptedException, IOException {
+            try 
+            {
+                perform(build, build.getWorkspace(), launcher, listener);
+            } catch (AbortException ex) {
+                return false;
+            } catch (Exception ex) {
+                StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                listener.getLogger().println(sw.toString());
+            }
+
+            return true;
+    }
     
     /**
      *
