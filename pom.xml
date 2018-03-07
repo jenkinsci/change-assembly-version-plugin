@@ -5,13 +5,6 @@
 		<artifactId>plugin</artifactId>
 		<version>1.642.4</version>
 	</parent>
-	<distributionManagement>
-      <repository>
-        <uniqueVersion>false</uniqueVersion>
-        <id>maven.jenkins-ci.org</id>
-        <url>https://repo.jenkins-ci.org/releases/</url>
-      </repository>
-    </distributionManagement>
   
 	<scm>
 		<connection>scm:git:ssh://github.com/jenkinsci/change-assembly-version-plugin.git</connection>
@@ -45,13 +38,6 @@
 			<url>https://repo.jenkins-ci.org/public/</url>
 		</repository>
 	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>repo.jenkins-ci.org</id>
-			<url>https://repo.jenkins-ci.org/public/</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
