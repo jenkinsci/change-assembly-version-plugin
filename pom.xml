@@ -16,7 +16,8 @@
 		<connection>scm:git:ssh://github.com/jenkinsci/change-assembly-version-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/change-assembly-version-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/change-assembly-version-plugin</url>
-	</scm>
+	  <tag>change-assembly-version-plugin-1.6</tag>
+  </scm>
 	
 	<url>https://wiki.jenkins-ci.org/display/JENKINS/Change+Assembly+Version</url>
 	<developers>
@@ -27,7 +28,7 @@
 	</developers>
 	<groupId>org.jenkinsci.plugins</groupId>
 	<artifactId>change-assembly-version-plugin</artifactId>
-	<version>1.6-SNAPSHOT</version>
+	<version>1.6</version>
 	<packaging>hpi</packaging>
 
 	<licenses>
