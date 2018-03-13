@@ -8,13 +8,14 @@
 
 	<properties>
 		<jenkins.version>1.642.4</jenkins.version>
+		<findbugs.failOnError>false</findbugs.failOnError>
 	</properties>
   
 	<scm>
 		<connection>scm:git:ssh://github.com/jenkinsci/change-assembly-version-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/change-assembly-version-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/change-assembly-version-plugin</url>
-	  <tag>HEAD</tag>
+	  <tag>change-assembly-version-plugin-1.10</tag>
   </scm>
 	
 	<url>https://wiki.jenkins-ci.org/display/JENKINS/Change+Assembly+Version</url>
@@ -26,7 +27,7 @@
 	</developers>
 	<groupId>org.jenkinsci.plugins</groupId>
 	<artifactId>change-assembly-version-plugin</artifactId>
-	<version>1.10-SNAPSHOT</version>
+	<version>1.10</version>
 	<packaging>hpi</packaging>
 
 	<licenses>
