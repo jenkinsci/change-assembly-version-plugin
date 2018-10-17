@@ -2,9 +2,10 @@ package org.jenkinsci.plugins.changeassemblyversion;
 
 import hudson.FilePath;
 import hudson.model.BuildListener;
-import hudson.remoting.VirtualChannel;
-import java.io.File;
+import hudson.model.TaskListener;
 
+
+import java.io.OutputStream;
 import java.io.IOException;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.IOUtils;
@@ -37,13 +38,22 @@ public class ChangeTools {
             BOMInputStream bim = new BOMInputStream(file.read(), true);
             String charset = bim.getBOMCharsetName();
             String content = IOUtils.toString(bim, charset);
+
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
             listener.getLogger().println("Detected charset: "+charset);
             content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
             bim.close();
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
-            file.write(content, charset);
-        } else {
+
+            OutputStream os = file.write();
+            try {
+                os.write(content.getBytes());
+            } finally {
+                os.close();
+            }
+        }
+        else
+        {
             listener.getLogger().println(String.format("Skipping replacement because value is empty."));
         }
     }
