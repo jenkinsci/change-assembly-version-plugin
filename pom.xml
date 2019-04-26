@@ -27,7 +27,7 @@
 	</developers>
 	<groupId>org.jenkinsci.plugins</groupId>
 	<artifactId>change-assembly-version-plugin</artifactId>
-	<version>1.11-SNAPSHOT</version>
+	<version>1.12</version>
 	<packaging>hpi</packaging>
 
 	<licenses>
