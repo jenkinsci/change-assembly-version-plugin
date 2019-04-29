@@ -56,8 +56,7 @@ public class ChangeTools {
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
             OutputStream os = file.write();
             try {
-                if (inputStream.hasBOM())
-                {
+                if (inputStream.hasBOM()){
                     os.write(inputStream.getBOM().getBytes());
                 }
                 os.write(content.getBytes(fileEncoding));
