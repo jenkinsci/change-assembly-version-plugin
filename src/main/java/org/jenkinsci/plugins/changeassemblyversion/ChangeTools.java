@@ -5,6 +5,7 @@ import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 
 import java.io.*;
@@ -38,26 +39,19 @@ public class ChangeTools {
             ByteOrderMark bom = inputStream.getBOM();
 
             Charset fileEncoding = Charset.defaultCharset();
-            if(inputStream.hasBOM()) {
-                fileEncoding = Charset.forName(inputStream.getBOM().getCharsetName());
+            if (bom != null) {
+                fileEncoding = Charset.forName(bom.getCharsetName());
             }
-            byte[] buffer = new byte[8192];
-            ByteArrayOutputStream bs = new ByteArrayOutputStream();
-            BufferedOutputStream out = new BufferedOutputStream(bs);
-            int read = inputStream.read(buffer, 0, buffer.length);
-            while (read > 0){
-                out.write(buffer, 0, read);
-                read = inputStream.read(buffer, 0, buffer.length);
-            }
-            out.flush();
-            String content = new String(bs.toByteArray(), fileEncoding);
+
+            String content = IOUtils.toString(inputStream, fileEncoding);
+            inputStream.close();
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
             content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
             OutputStream os = file.write();
             try {
-                if (inputStream.hasBOM()){
-                    os.write(inputStream.getBOM().getBytes());
+                if (bom != null){
+                    os.write(bom.getBytes());
                 }
                 os.write(content.getBytes(fileEncoding));
             } finally {
