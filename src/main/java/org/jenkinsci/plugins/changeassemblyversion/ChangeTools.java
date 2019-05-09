@@ -1,11 +1,16 @@
 package org.jenkinsci.plugins.changeassemblyversion;
 
+import com.sun.media.jfxmedia.track.Track;
 import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 public class ChangeTools {
 
@@ -31,13 +36,30 @@ public class ChangeTools {
     public void Replace(String replacement, TaskListener listener) throws IOException, InterruptedException {
         if (replacement != null && !replacement.isEmpty())
         {
-            String content = file.readToString();  // needs to use read() instead!
+            BOMInputStream inputStream = new BOMInputStream(file.read());
+            String content;
+            ByteOrderMark bom;
+            Charset fileEncoding = Charset.defaultCharset();
+            try {
+                bom = inputStream.getBOM();
+                if (bom != null) {
+                    fileEncoding = Charset.forName(bom.getCharsetName());
+                }
+
+                content = IOUtils.toString(inputStream, fileEncoding);
+            }
+            finally {
+                inputStream.close();
+            }
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
             content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
             OutputStream os = file.write();
             try {
-                os.write(content.getBytes());
+                if (bom != null){
+                    os.write(bom.getBytes());
+                }
+                os.write(content.getBytes(fileEncoding));
             } finally {
                 os.close();
             }
