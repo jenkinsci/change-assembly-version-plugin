@@ -37,15 +37,20 @@ public class ChangeTools {
         if (replacement != null && !replacement.isEmpty())
         {
             BOMInputStream inputStream = new BOMInputStream(file.read());
-            ByteOrderMark bom = inputStream.getBOM();
-
+            String content;
+            ByteOrderMark bom;
             Charset fileEncoding = Charset.defaultCharset();
-            if (bom != null) {
-                fileEncoding = Charset.forName(bom.getCharsetName());
-            }
+            try {
+                bom = inputStream.getBOM();
+                if (bom != null) {
+                    fileEncoding = Charset.forName(bom.getCharsetName());
+                }
 
-            String content = IOUtils.toString(inputStream, fileEncoding);
-            inputStream.close();
+                content = IOUtils.toString(inputStream, fileEncoding);
+            }
+            finally {
+                inputStream.close();
+            }
             listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
             content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
