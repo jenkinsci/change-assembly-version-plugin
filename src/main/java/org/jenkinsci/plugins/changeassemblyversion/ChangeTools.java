@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.changeassemblyversion;
 
-import com.sun.media.jfxmedia.track.Track;
 import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
