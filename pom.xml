@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.55</version>
+        <version>4.53</version>
         <relativePath/>
     </parent>
 
@@ -11,7 +11,6 @@
         <revision>1.11</revision>
         <changelist>-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/change-assembly-version-plugin</gitHubRepo>
-        <java.level>8</java.level>
         <jenkins.version>2.361.4</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>false</spotbugs.failOnError>
@@ -49,14 +48,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.2</version>
+            <version>324.va_f5d6774f3a_d</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.47</version>
-            <scope>test</scope>
-            <type>jar</type>
+            <version>1.70</version>
         </dependency>
     </dependencies>
 
