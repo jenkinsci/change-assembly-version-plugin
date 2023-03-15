@@ -26,8 +26,9 @@
 
     <developers>
         <developer>
-            <id>slide_o_mix</id>
+            <id>slide</id>
             <name>Alex Earl</name>
+            <email>slide.o.mix@gmail.com</email>
         </developer>
     </developers>
 
@@ -48,14 +49,26 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>324.va_f5d6774f3a_d</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.70</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-2.361.x</artifactId>
+                <version>1887.vda_d0ddb_c15c4</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <repository>
