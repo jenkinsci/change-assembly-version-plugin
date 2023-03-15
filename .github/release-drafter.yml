@@ -1,0 +1,2 @@
+_extends: .github
+tag-template: change-assembly-version-plugin-$NEXT_PATCH_VERSION
