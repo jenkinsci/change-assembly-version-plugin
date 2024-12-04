@@ -73,16 +73,17 @@ public class ReplacementsTest {
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                     BuildListener listener) throws InterruptedException, IOException {
-                build.getWorkspace().child("AssemblyVersion.cs").write("using System.Reflection;\n" +
-"\n" +
-"[assembly: AssemblyTitle(\"\")]\n" +
-"[assembly: AssemblyDescription(\"\")]\n" +
-"[assembly: AssemblyCompany(\"\")]\n" +
-"[assembly: AssemblyProduct(\"\")]\n" +
-"[assembly: AssemblyCopyright(\"\")]\n" +
-"[assembly: AssemblyTrademark(\"\")]\n" +
-"[assembly: AssemblyCulture(\"\")]\n" +
-"[assembly: AssemblyVersion(\"13.1.1.976\")]", "UTF-8");
+                build.getWorkspace().child("AssemblyVersion.cs").write("""
+using System.Reflection;
+
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("13.1.1.976")]""", "UTF-8");
                 return true;
             }
         });
@@ -116,9 +117,10 @@ public class ReplacementsTest {
         FreeStyleProject project = j.createFreeStyleProject();
         final String f1 = "myassembly/properties/AssemblyInfo.cs";
         final String f2 = ".svn/myassembly/properties/AssemblyInfo.cs";
-        final String c = "using System.Reflection;\n" +
-"\n" +
-"[assembly: AssemblyVersion(\"13.1.1.976\")]";
+        final String c = """
+using System.Reflection;
+
+[assembly: AssemblyVersion("13.1.1.976")]""";
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                     BuildListener listener) throws InterruptedException, IOException {
@@ -150,16 +152,17 @@ public class ReplacementsTest {
                 outputStream.write(fileBom.getBytes());
                 OutputStreamWriter w = new OutputStreamWriter(outputStream, "UTF-8");
                 try{
-                    w.write("using System.Reflection;\n" +
-                            "\n" +
-                            "[assembly: AssemblyTitle(\"\")]\n" +
-                            "[assembly: AssemblyDescription(\"\")]\n" +
-                            "[assembly: AssemblyCompany(\"\")]\n" +
-                            "[assembly: AssemblyProduct(\"\")]\n" +
-                            "[assembly: AssemblyCopyright(\"\")]\n" +
-                            "[assembly: AssemblyTrademark(\"\")]\n" +
-                            "[assembly: AssemblyCulture(\"\")]\n" +
-                            "[assembly: AssemblyVersion(\"13.1.1.976\")]");
+                    w.write("""
+                            using System.Reflection;
+                            
+                            [assembly: AssemblyTitle("")]
+                            [assembly: AssemblyDescription("")]
+                            [assembly: AssemblyCompany("")]
+                            [assembly: AssemblyProduct("")]
+                            [assembly: AssemblyCopyright("")]
+                            [assembly: AssemblyTrademark("")]
+                            [assembly: AssemblyCulture("")]
+                            [assembly: AssemblyVersion("13.1.1.976")]""");
                 }
                 finally {
                     w.close();
@@ -198,16 +201,17 @@ public class ReplacementsTest {
     @Test
     public void testBOMFileNotModified() throws IOException, ExecutionException, InterruptedException {
         FreeStyleProject project = j.createFreeStyleProject();
-        final byte[] originFileBinary = ("using System.Reflection;\n" +
-                "\n" +
-                "[assembly: AssemblyTitle(\"\")]\n" +
-                "[assembly: AssemblyDescription(\"\")]\n" +
-                "[assembly: AssemblyCompany(\"\")]\n" +
-                "[assembly: AssemblyProduct(\"\")]\n" +
-                "[assembly: AssemblyCopyright(\"\")]\n" +
-                "[assembly: AssemblyTrademark(\"\")]\n" +
-                "[assembly: AssemblyCulture(\"\")]\n" +
-                "[assembly: AssemblyVersion(\"13.1.1.976\")]").getBytes();
+        final byte[] originFileBinary = ("""
+                using System.Reflection;
+                
+                [assembly: AssemblyTitle("")]
+                [assembly: AssemblyDescription("")]
+                [assembly: AssemblyCompany("")]
+                [assembly: AssemblyProduct("")]
+                [assembly: AssemblyCopyright("")]
+                [assembly: AssemblyTrademark("")]
+                [assembly: AssemblyCulture("")]
+                [assembly: AssemblyVersion("13.1.1.976")]""").getBytes();
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                    BuildListener listener) throws InterruptedException, IOException {
@@ -242,16 +246,17 @@ public class ReplacementsTest {
         FreeStyleProject project = j.createFreeStyleProject();
         ByteOrderMark bom = ByteOrderMark.UTF_8;
         byte[] bomBinary = bom.getBytes();
-        final byte[] originFileContentBinary = ("using System.Reflection;\n" +
-                "\n" +
-                "[assembly: AssemblyTitle(\"\")]\n" +
-                "[assembly: AssemblyDescription(\"\")]\n" +
-                "[assembly: AssemblyCompany(\"\")]\n" +
-                "[assembly: AssemblyProduct(\"\")]\n" +
-                "[assembly: AssemblyCopyright(\"\")]\n" +
-                "[assembly: AssemblyTrademark(\"\")]\n" +
-                "[assembly: AssemblyCulture(\"\")]\n" +
-                "[assembly: AssemblyVersion(\"13.1.1.976\")]").getBytes();
+        final byte[] originFileContentBinary = ("""
+                using System.Reflection;
+                
+                [assembly: AssemblyTitle("")]
+                [assembly: AssemblyDescription("")]
+                [assembly: AssemblyCompany("")]
+                [assembly: AssemblyProduct("")]
+                [assembly: AssemblyCopyright("")]
+                [assembly: AssemblyTrademark("")]
+                [assembly: AssemblyCulture("")]
+                [assembly: AssemblyVersion("13.1.1.976")]""").getBytes();
         final byte[] originFileBinary = Bytes.concat(bomBinary, originFileContentBinary);
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,

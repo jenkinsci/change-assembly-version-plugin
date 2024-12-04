@@ -208,8 +208,8 @@ public class ChangeAssemblyVersion extends Builder implements SimpleBuildStep {
             
             EnvVars envVars = run.getEnvironment(listener);
 
-            if (run instanceof AbstractBuild) {
-                envVars.overrideAll(((AbstractBuild<?, ?>) run).getBuildVariables());
+            if (run instanceof AbstractBuild<?, ?> build) {
+                envVars.overrideAll(build.getBuildVariables());
             }
 
             String version = new AssemblyVersion(this.versionPattern, envVars).getVersion();
@@ -230,15 +230,15 @@ public class ChangeAssemblyVersion extends Builder implements SimpleBuildStep {
             
             
             // Log new expanded values
-            listener.getLogger().println(String.format("Changing File(s): %s", assemblyGlob));
-            listener.getLogger().println(String.format("Assembly Version : %s",  version));
-            listener.getLogger().println(String.format("Assembly Title : %s",  assemblyTitle));
-            listener.getLogger().println(String.format("Assembly Description : %s",  assemblyDescription));
-            listener.getLogger().println(String.format("Assembly Company : %s",  assemblyCompany));
-            listener.getLogger().println(String.format("Assembly Product : %s",  assemblyProduct));
-            listener.getLogger().println(String.format("Assembly Copyright : %s",  assemblyCopyright));
-            listener.getLogger().println(String.format("Assembly Trademark : %s",  assemblyTrademark));
-            listener.getLogger().println(String.format("Assembly Culture : %s",  assemblyCulture));
+            listener.getLogger().println("Changing File(s): %s".formatted(assemblyGlob));
+            listener.getLogger().println("Assembly Version : %s".formatted(version));
+            listener.getLogger().println("Assembly Title : %s".formatted(assemblyTitle));
+            listener.getLogger().println("Assembly Description : %s".formatted(assemblyDescription));
+            listener.getLogger().println("Assembly Company : %s".formatted(assemblyCompany));
+            listener.getLogger().println("Assembly Product : %s".formatted(assemblyProduct));
+            listener.getLogger().println("Assembly Copyright : %s".formatted(assemblyCopyright));
+            listener.getLogger().println("Assembly Trademark : %s".formatted(assemblyTrademark));
+            listener.getLogger().println("Assembly Culture : %s".formatted(assemblyCulture));
             
             for (FilePath f : workspace.list(assemblyGlob))
             {
