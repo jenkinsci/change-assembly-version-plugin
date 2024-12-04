@@ -23,6 +23,9 @@
  */
 package org.jenkinsci.plugins.changeassemblyversion;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.primitives.Bytes;
 import hudson.EnvVars;
 import hudson.Launcher;
@@ -31,20 +34,12 @@ import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.slaves.EnvironmentVariablesNodeProperty;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.ExecutionException;
-
 import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.FileUtils;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.bouncycastle.util.Arrays;
@@ -71,9 +66,12 @@ public class ReplacementsTest {
         j.jenkins.getGlobalNodeProperties().add(prop);
         FreeStyleProject project = j.createFreeStyleProject();
         project.getBuildersList().add(new TestBuilder() {
-            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-                    BuildListener listener) throws InterruptedException, IOException {
-                build.getWorkspace().child("AssemblyVersion.cs").write("""
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+                    throws InterruptedException, IOException {
+                build.getWorkspace()
+                        .child("AssemblyVersion.cs")
+                        .write(
+                                """
 using System.Reflection;
 
 [assembly: AssemblyTitle("")]
@@ -83,18 +81,30 @@ using System.Reflection;
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("13.1.1.976")]""", "UTF-8");
+[assembly: AssemblyVersion("13.1.1.976")]""",
+                                "UTF-8");
                 return true;
             }
         });
-        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "AssemblyVersion.cs", "", "", "MyTitle", "MyDescription", "MyCompany", "MyProduct", "MyCopyright", "MyTrademark", "MyCulture");
+        ChangeAssemblyVersion builder = new ChangeAssemblyVersion(
+                "$PREFIX.${BUILD_NUMBER}",
+                "AssemblyVersion.cs",
+                "",
+                "",
+                "MyTitle",
+                "MyDescription",
+                "MyCompany",
+                "MyProduct",
+                "MyCopyright",
+                "MyTrademark",
+                "MyCulture");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
-        //String s = FileUtils.readFileToString(build.getLogFile());
+        // String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child("AssemblyVersion.cs").readToString();
         assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
-        
+
         // Check that we update additional assembly info
         assertTrue(content.contains("AssemblyTitle(\"MyTitle"));
         assertTrue(content.contains("AssemblyDescription(\"MyDescription"));
@@ -103,12 +113,13 @@ using System.Reflection;
         assertTrue(content.contains("AssemblyCopyright(\"MyCopyright"));
         assertTrue(content.contains("AssemblyTrademark(\"MyTrademark"));
         assertTrue(content.contains("AssemblyCulture(\"MyCulture"));
-        
+
         assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
     }
-    
+
     @Test
-    public void testResolveEnvironmentVariables_recursively_excludingSvn() throws InterruptedException, IOException, Exception {
+    public void testResolveEnvironmentVariables_recursively_excludingSvn()
+            throws InterruptedException, IOException, Exception {
 
         EnvironmentVariablesNodeProperty prop = new EnvironmentVariablesNodeProperty();
         EnvVars envVars = prop.getEnvVars();
@@ -122,18 +133,19 @@ using System.Reflection;
 
 [assembly: AssemblyVersion("13.1.1.976")]""";
         project.getBuildersList().add(new TestBuilder() {
-            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-                    BuildListener listener) throws InterruptedException, IOException {
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+                    throws InterruptedException, IOException {
                 build.getWorkspace().child(f1).write(c, "UTF-8");
                 build.getWorkspace().child(f2).write(c, "UTF-8");
                 return true;
             }
         });
-        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "", "", "", "", "", "", "", "", "", "");
+        ChangeAssemblyVersion builder =
+                new ChangeAssemblyVersion("$PREFIX.${BUILD_NUMBER}", "", "", "", "", "", "", "", "", "", "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
-        //String s = FileUtils.readFileToString(build.getLogFile());
+        // String s = FileUtils.readFileToString(build.getLogFile());
         String content = build.getWorkspace().child(f1).readToString();
         assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
         content = build.getWorkspace().child(f2).readToString();
@@ -146,15 +158,17 @@ using System.Reflection;
         FreeStyleProject project = j.createFreeStyleProject();
         final ByteOrderMark fileBom = ByteOrderMark.UTF_8;
         project.getBuildersList().add(new TestBuilder() {
-            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-                                   BuildListener listener) throws InterruptedException, IOException {
-                OutputStream outputStream = build.getWorkspace().child("AssemblyVersion.cs").write();
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+                    throws InterruptedException, IOException {
+                OutputStream outputStream =
+                        build.getWorkspace().child("AssemblyVersion.cs").write();
                 outputStream.write(fileBom.getBytes());
                 OutputStreamWriter w = new OutputStreamWriter(outputStream, "UTF-8");
-                try{
-                    w.write("""
+                try {
+                    w.write(
+                            """
                             using System.Reflection;
-                            
+
                             [assembly: AssemblyTitle("")]
                             [assembly: AssemblyDescription("")]
                             [assembly: AssemblyCompany("")]
@@ -163,8 +177,7 @@ using System.Reflection;
                             [assembly: AssemblyTrademark("")]
                             [assembly: AssemblyCulture("")]
                             [assembly: AssemblyVersion("13.1.1.976")]""");
-                }
-                finally {
+                } finally {
                     w.close();
                     outputStream.close();
                 }
@@ -172,12 +185,24 @@ using System.Reflection;
                 return true;
             }
         });
-        ChangeAssemblyVersion builder = new ChangeAssemblyVersion("1.2.3", "AssemblyVersion.cs", "", "", "MyTitle", "MyDescription", "MyCompany", "MyProduct", "MyCopyright", "MyTrademark", "MyCulture");
+        ChangeAssemblyVersion builder = new ChangeAssemblyVersion(
+                "1.2.3",
+                "AssemblyVersion.cs",
+                "",
+                "",
+                "MyTitle",
+                "MyDescription",
+                "MyCompany",
+                "MyProduct",
+                "MyCopyright",
+                "MyTrademark",
+                "MyCulture");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
-        //String s = FileUtils.readFileToString(build.getLogFile());
-        InputStream readStream = build.getWorkspace().child("AssemblyVersion.cs").read();
+        // String s = FileUtils.readFileToString(build.getLogFile());
+        InputStream readStream =
+                build.getWorkspace().child("AssemblyVersion.cs").read();
         BOMInputStream bomInputStream = new BOMInputStream(readStream);
         ByteOrderMark bomAfterChange = bomInputStream.getBOM();
         String content = org.apache.commons.io.IOUtils.toString(bomInputStream);
@@ -201,9 +226,10 @@ using System.Reflection;
     @Test
     public void testBOMFileNotModified() throws IOException, ExecutionException, InterruptedException {
         FreeStyleProject project = j.createFreeStyleProject();
-        final byte[] originFileBinary = ("""
+        final byte[] originFileBinary =
+                ("""
                 using System.Reflection;
-                
+
                 [assembly: AssemblyTitle("")]
                 [assembly: AssemblyDescription("")]
                 [assembly: AssemblyCompany("")]
@@ -211,15 +237,16 @@ using System.Reflection;
                 [assembly: AssemblyCopyright("")]
                 [assembly: AssemblyTrademark("")]
                 [assembly: AssemblyCulture("")]
-                [assembly: AssemblyVersion("13.1.1.976")]""").getBytes();
+                [assembly: AssemblyVersion("13.1.1.976")]""")
+                        .getBytes();
         project.getBuildersList().add(new TestBuilder() {
-            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-                                   BuildListener listener) throws InterruptedException, IOException {
-                OutputStream outputStream = build.getWorkspace().child("AssemblyVersion.cs").write();
-                try{
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+                    throws InterruptedException, IOException {
+                OutputStream outputStream =
+                        build.getWorkspace().child("AssemblyVersion.cs").write();
+                try {
                     outputStream.write(originFileBinary);
-                }
-                finally {
+                } finally {
                     outputStream.close();
                 }
 
@@ -231,8 +258,9 @@ using System.Reflection;
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
-        //String s = FileUtils.readFileToString(build.getLogFile());
-        InputStream readStream = build.getWorkspace().child("AssemblyVersion.cs").read();
+        // String s = FileUtils.readFileToString(build.getLogFile());
+        InputStream readStream =
+                build.getWorkspace().child("AssemblyVersion.cs").read();
 
         byte[] binaryAfterChange = IOUtils.toByteArray(readStream);
         String content = new String(binaryAfterChange, "UTF-8");
@@ -246,9 +274,10 @@ using System.Reflection;
         FreeStyleProject project = j.createFreeStyleProject();
         ByteOrderMark bom = ByteOrderMark.UTF_8;
         byte[] bomBinary = bom.getBytes();
-        final byte[] originFileContentBinary = ("""
+        final byte[] originFileContentBinary =
+                ("""
                 using System.Reflection;
-                
+
                 [assembly: AssemblyTitle("")]
                 [assembly: AssemblyDescription("")]
                 [assembly: AssemblyCompany("")]
@@ -256,16 +285,17 @@ using System.Reflection;
                 [assembly: AssemblyCopyright("")]
                 [assembly: AssemblyTrademark("")]
                 [assembly: AssemblyCulture("")]
-                [assembly: AssemblyVersion("13.1.1.976")]""").getBytes();
+                [assembly: AssemblyVersion("13.1.1.976")]""")
+                        .getBytes();
         final byte[] originFileBinary = Bytes.concat(bomBinary, originFileContentBinary);
         project.getBuildersList().add(new TestBuilder() {
-            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-                                   BuildListener listener) throws InterruptedException, IOException {
-                OutputStream outputStream = build.getWorkspace().child("AssemblyVersion.cs").write();
-                try{
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+                    throws InterruptedException, IOException {
+                OutputStream outputStream =
+                        build.getWorkspace().child("AssemblyVersion.cs").write();
+                try {
                     outputStream.write(originFileBinary);
-                }
-                finally {
+                } finally {
                     outputStream.close();
                 }
 
@@ -277,8 +307,9 @@ using System.Reflection;
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
 
-        //String s = FileUtils.readFileToString(build.getLogFile());
-        InputStream readStream = build.getWorkspace().child("AssemblyVersion.cs").read();
+        // String s = FileUtils.readFileToString(build.getLogFile());
+        InputStream readStream =
+                build.getWorkspace().child("AssemblyVersion.cs").read();
         byte[] binaryAfterChange = IOUtils.toByteArray(readStream);
         readStream.close();
 

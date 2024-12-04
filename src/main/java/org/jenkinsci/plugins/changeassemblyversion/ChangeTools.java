@@ -1,15 +1,13 @@
 package org.jenkinsci.plugins.changeassemblyversion;
 
 import hudson.FilePath;
-import hudson.model.BuildListener;
 import hudson.model.TaskListener;
-import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.BOMInputStream;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 
 public class ChangeTools {
 
@@ -33,8 +31,7 @@ public class ChangeTools {
     }
 
     public void Replace(String replacement, TaskListener listener) throws IOException, InterruptedException {
-        if (replacement != null && !replacement.isEmpty())
-        {
+        if (replacement != null && !replacement.isEmpty()) {
             BOMInputStream inputStream = new BOMInputStream(file.read());
             String content;
             ByteOrderMark bom;
@@ -46,25 +43,23 @@ public class ChangeTools {
                 }
 
                 content = IOUtils.toString(inputStream, fileEncoding);
-            }
-            finally {
+            } finally {
                 inputStream.close();
             }
-            listener.getLogger().println("Updating file : %s, Replacement : %s".formatted(file.getRemote(), replacement));
+            listener.getLogger()
+                    .println("Updating file : %s, Replacement : %s".formatted(file.getRemote(), replacement));
             content = content.replaceAll(regexPattern, replacementPattern.formatted(replacement));
-            //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
+            // listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
             OutputStream os = file.write();
             try {
-                if (bom != null){
+                if (bom != null) {
                     os.write(bom.getBytes());
                 }
                 os.write(content.getBytes(fileEncoding));
             } finally {
                 os.close();
             }
-        }
-        else
-        {
+        } else {
             listener.getLogger().println("Skipping replacement because value is empty.".formatted());
         }
     }
