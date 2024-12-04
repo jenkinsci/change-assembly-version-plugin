@@ -50,8 +50,8 @@ public class ChangeTools {
             finally {
                 inputStream.close();
             }
-            listener.getLogger().println(String.format("Updating file : %s, Replacement : %s", file.getRemote(), replacement));
-            content = content.replaceAll(regexPattern, String.format(replacementPattern, replacement));
+            listener.getLogger().println("Updating file : %s, Replacement : %s".formatted(file.getRemote(), replacement));
+            content = content.replaceAll(regexPattern, replacementPattern.formatted(replacement));
             //listener.getLogger().println(String.format("Updating file : %s", file.getRemote()));
             OutputStream os = file.write();
             try {
@@ -65,7 +65,7 @@ public class ChangeTools {
         }
         else
         {
-            listener.getLogger().println(String.format("Skipping replacement because value is empty."));
+            listener.getLogger().println("Skipping replacement because value is empty.".formatted());
         }
     }
 }
