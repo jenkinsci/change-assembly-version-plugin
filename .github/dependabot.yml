@@ -7,6 +7,6 @@ updates:
   open-pull-requests-limit: 10
   target-branch: master
   reviewers:
-  - slide_o_mix
+  - slide
   labels:
   - dependencies
