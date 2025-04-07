@@ -23,9 +23,6 @@
  */
 package org.jenkinsci.plugins.changeassemblyversion;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.google.common.primitives.Bytes;
 import hudson.EnvVars;
 import hudson.Launcher;
@@ -34,32 +31,32 @@ import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.slaves.EnvironmentVariablesNodeProperty;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.bouncycastle.util.Arrays;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- *
  * @author BELLINSALARIN
  */
-public class ReplacementsTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class ReplacementsTest {
 
     @Test
-    public void testResolveEnvironmentVariables() throws InterruptedException, IOException, Exception {
-
+    void testResolveEnvironmentVariables(JenkinsRule j) throws Exception {
         EnvironmentVariablesNodeProperty prop = new EnvironmentVariablesNodeProperty();
         EnvVars envVars = prop.getEnvVars();
         envVars.put("PREFIX", "1.1.0");
@@ -72,16 +69,16 @@ public class ReplacementsTest {
                         .child("AssemblyVersion.cs")
                         .write(
                                 """
-using System.Reflection;
-
-[assembly: AssemblyTitle("")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("13.1.1.976")]""",
+                                        using System.Reflection;
+                                        
+                                        [assembly: AssemblyTitle("")]
+                                        [assembly: AssemblyDescription("")]
+                                        [assembly: AssemblyCompany("")]
+                                        [assembly: AssemblyProduct("")]
+                                        [assembly: AssemblyCopyright("")]
+                                        [assembly: AssemblyTrademark("")]
+                                        [assembly: AssemblyCulture("")]
+                                        [assembly: AssemblyVersion("13.1.1.976")]""",
                                 "UTF-8");
                 return true;
             }
@@ -114,13 +111,12 @@ using System.Reflection;
         assertTrue(content.contains("AssemblyTrademark(\"MyTrademark"));
         assertTrue(content.contains("AssemblyCulture(\"MyCulture"));
 
-        assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
+        assertEquals("$PREFIX.${BUILD_NUMBER}", builder.getVersionPattern());
     }
 
     @Test
-    public void testResolveEnvironmentVariables_recursively_excludingSvn()
-            throws InterruptedException, IOException, Exception {
-
+    void testResolveEnvironmentVariables_recursively_excludingSvn(JenkinsRule j)
+            throws Exception {
         EnvironmentVariablesNodeProperty prop = new EnvironmentVariablesNodeProperty();
         EnvVars envVars = prop.getEnvVars();
         envVars.put("PREFIX", "1.1.0");
@@ -129,9 +125,9 @@ using System.Reflection;
         final String f1 = "myassembly/properties/AssemblyInfo.cs";
         final String f2 = ".svn/myassembly/properties/AssemblyInfo.cs";
         final String c = """
-using System.Reflection;
-
-[assembly: AssemblyVersion("13.1.1.976")]""";
+                using System.Reflection;
+                
+                [assembly: AssemblyVersion("13.1.1.976")]""";
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
                     throws InterruptedException, IOException {
@@ -150,11 +146,11 @@ using System.Reflection;
         assertTrue(content.contains("AssemblyVersion(\"1.1.0."));
         content = build.getWorkspace().child(f2).readToString();
         assertTrue(content.contains("AssemblyVersion(\"13.1.1.976"));
-        assertTrue(builder.getVersionPattern().equals("$PREFIX.${BUILD_NUMBER}"));
+        assertEquals("$PREFIX.${BUILD_NUMBER}", builder.getVersionPattern());
     }
 
     @Test
-    public void testBOMFileReplace() throws IOException, ExecutionException, InterruptedException {
+    void testBOMFileReplace(JenkinsRule j) throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         final ByteOrderMark fileBom = ByteOrderMark.UTF_8;
         project.getBuildersList().add(new TestBuilder() {
@@ -163,20 +159,20 @@ using System.Reflection;
                 OutputStream outputStream =
                         build.getWorkspace().child("AssemblyVersion.cs").write();
                 outputStream.write(fileBom.getBytes());
-                OutputStreamWriter w = new OutputStreamWriter(outputStream, "UTF-8");
+                OutputStreamWriter w = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
                 try {
                     w.write(
                             """
-                            using System.Reflection;
-
-                            [assembly: AssemblyTitle("")]
-                            [assembly: AssemblyDescription("")]
-                            [assembly: AssemblyCompany("")]
-                            [assembly: AssemblyProduct("")]
-                            [assembly: AssemblyCopyright("")]
-                            [assembly: AssemblyTrademark("")]
-                            [assembly: AssemblyCulture("")]
-                            [assembly: AssemblyVersion("13.1.1.976")]""");
+                                    using System.Reflection;
+                                    
+                                    [assembly: AssemblyTitle("")]
+                                    [assembly: AssemblyDescription("")]
+                                    [assembly: AssemblyCompany("")]
+                                    [assembly: AssemblyProduct("")]
+                                    [assembly: AssemblyCopyright("")]
+                                    [assembly: AssemblyTrademark("")]
+                                    [assembly: AssemblyCulture("")]
+                                    [assembly: AssemblyVersion("13.1.1.976")]""");
                 } finally {
                     w.close();
                     outputStream.close();
@@ -203,9 +199,9 @@ using System.Reflection;
         // String s = FileUtils.readFileToString(build.getLogFile());
         InputStream readStream =
                 build.getWorkspace().child("AssemblyVersion.cs").read();
-        BOMInputStream bomInputStream = new BOMInputStream(readStream);
+        BOMInputStream bomInputStream = BOMInputStream.builder().setInputStream(readStream).get();
         ByteOrderMark bomAfterChange = bomInputStream.getBOM();
-        String content = org.apache.commons.io.IOUtils.toString(bomInputStream);
+        String content = org.apache.commons.io.IOUtils.toString(bomInputStream, StandardCharsets.UTF_8);
         bomInputStream.close();
         readStream.close();
 
@@ -224,30 +220,26 @@ using System.Reflection;
     }
 
     @Test
-    public void testBOMFileNotModified() throws IOException, ExecutionException, InterruptedException {
+    void testBOMFileNotModified(JenkinsRule j) throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         final byte[] originFileBinary =
                 ("""
-                using System.Reflection;
-
-                [assembly: AssemblyTitle("")]
-                [assembly: AssemblyDescription("")]
-                [assembly: AssemblyCompany("")]
-                [assembly: AssemblyProduct("")]
-                [assembly: AssemblyCopyright("")]
-                [assembly: AssemblyTrademark("")]
-                [assembly: AssemblyCulture("")]
-                [assembly: AssemblyVersion("13.1.1.976")]""")
+                        using System.Reflection;
+                        
+                        [assembly: AssemblyTitle("")]
+                        [assembly: AssemblyDescription("")]
+                        [assembly: AssemblyCompany("")]
+                        [assembly: AssemblyProduct("")]
+                        [assembly: AssemblyCopyright("")]
+                        [assembly: AssemblyTrademark("")]
+                        [assembly: AssemblyCulture("")]
+                        [assembly: AssemblyVersion("13.1.1.976")]""")
                         .getBytes();
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
                     throws InterruptedException, IOException {
-                OutputStream outputStream =
-                        build.getWorkspace().child("AssemblyVersion.cs").write();
-                try {
+                try (OutputStream outputStream = build.getWorkspace().child("AssemblyVersion.cs").write()) {
                     outputStream.write(originFileBinary);
-                } finally {
-                    outputStream.close();
                 }
 
                 return true;
@@ -263,40 +255,36 @@ using System.Reflection;
                 build.getWorkspace().child("AssemblyVersion.cs").read();
 
         byte[] binaryAfterChange = IOUtils.toByteArray(readStream);
-        String content = new String(binaryAfterChange, "UTF-8");
+        String content = new String(binaryAfterChange, StandardCharsets.UTF_8);
 
         // the replaced file should have the same BOM as the origin.
         assertTrue(Arrays.areEqual(originFileBinary, binaryAfterChange));
     }
 
     @Test
-    public void testBOMFileNotModified2() throws IOException, ExecutionException, InterruptedException {
+    void testBOMFileNotModified2(JenkinsRule j) throws Exception {
         FreeStyleProject project = j.createFreeStyleProject();
         ByteOrderMark bom = ByteOrderMark.UTF_8;
         byte[] bomBinary = bom.getBytes();
         final byte[] originFileContentBinary =
                 ("""
-                using System.Reflection;
-
-                [assembly: AssemblyTitle("")]
-                [assembly: AssemblyDescription("")]
-                [assembly: AssemblyCompany("")]
-                [assembly: AssemblyProduct("")]
-                [assembly: AssemblyCopyright("")]
-                [assembly: AssemblyTrademark("")]
-                [assembly: AssemblyCulture("")]
-                [assembly: AssemblyVersion("13.1.1.976")]""")
+                        using System.Reflection;
+                        
+                        [assembly: AssemblyTitle("")]
+                        [assembly: AssemblyDescription("")]
+                        [assembly: AssemblyCompany("")]
+                        [assembly: AssemblyProduct("")]
+                        [assembly: AssemblyCopyright("")]
+                        [assembly: AssemblyTrademark("")]
+                        [assembly: AssemblyCulture("")]
+                        [assembly: AssemblyVersion("13.1.1.976")]""")
                         .getBytes();
         final byte[] originFileBinary = Bytes.concat(bomBinary, originFileContentBinary);
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
                     throws InterruptedException, IOException {
-                OutputStream outputStream =
-                        build.getWorkspace().child("AssemblyVersion.cs").write();
-                try {
+                try (OutputStream outputStream = build.getWorkspace().child("AssemblyVersion.cs").write()) {
                     outputStream.write(originFileBinary);
-                } finally {
-                    outputStream.close();
                 }
 
                 return true;
