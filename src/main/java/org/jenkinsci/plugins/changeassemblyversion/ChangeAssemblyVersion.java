@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import jenkins.tasks.SimpleBuildStep;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -210,7 +209,7 @@ public class ChangeAssemblyVersion extends Builder implements SimpleBuildStep {
             }
 
             String version = new AssemblyVersion(this.versionPattern, envVars).getVersion();
-            if (versionPattern == null || StringUtils.isEmpty(versionPattern)) {
+            if (versionPattern == null || versionPattern.isEmpty()) {
                 listener.getLogger().println("Please provide a valid version pattern.");
                 throw new AbortException("Please provide a valid version pattern.");
             }
